@@ -15,7 +15,7 @@ namespace AJTarefasRecursos.Repositorios.Projeto
             _con.ConnectionString = configuration["ConnectionStrings:DefaultConnection"];
         }
 
-        public async Task<int> PostTarefa(PostTarefaRequest Tarefa)
+        public async Task<int> PostTarefaAsync(PostTarefaRequest Tarefa)
         {
             var cmd = new SqlCommand(@"insert into Tarefas
                                         (
@@ -73,5 +73,31 @@ namespace AJTarefasRecursos.Repositorios.Projeto
 
         }
 
+        public async Task PatchTarefaAsync(TarefaDto Tarefa)
+        {
+            var cmd = new SqlCommand(@"", _con);
+
+            cmd.CommandType = System.Data.CommandType.Text;
+
+
+            try
+            {
+                _con.Open();
+
+                await cmd.ExecuteNonQueryAsync();
+
+                _con.Close();
+
+            }
+            catch (System.Exception)
+            {
+                if (_con.State != System.Data.ConnectionState.Closed)
+                {
+                    _con.Close();
+                }
+                throw;
+            }
+
+        }
     }
 }

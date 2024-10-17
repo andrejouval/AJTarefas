@@ -23,6 +23,7 @@ namespace AJTarefasApp.Controllers.Tarefa.Post
         [JsonPropertyName("dataCriacao")]
         public DateTime DataCriacao { get; set; }
 
+        [JsonPropertyName("status")]
         public PostTarefaStatusResponse Status {  get; set; }
 
     }

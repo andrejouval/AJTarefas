@@ -15,7 +15,7 @@ namespace AJTarefasRecursos.Repositorios.Projeto
             _con.ConnectionString = configuration["ConnectionStrings:DefaultConnection"];
         }
 
-        public async Task<int> PostProjeto(PostProjetoRequest Projeto)
+        public async Task<int> PostProjetoAsync(PostProjetoRequest Projeto)
         {
             var cmd = new SqlCommand(@"insert into Projetos(
                                         NomeProjeto
@@ -57,6 +57,34 @@ namespace AJTarefasRecursos.Repositorios.Projeto
             }
 
         }
+
+        public async Task<bool> ProjetoExisteAsync(int ProjetoId)
+        {
+            var cmd = new SqlCommand(@"select count(1) from Projetos where Id = " + ProjetoId, _con);
+
+            cmd.CommandType = System.Data.CommandType.Text;
+
+            try
+            {
+                _con.Open();
+
+                var existe = await cmd.ExecuteScalarAsync();
+
+                _con.Close();
+
+                return Convert.ToBoolean(existe);
+            }
+            catch (System.Exception)
+            {
+                if (_con.State != System.Data.ConnectionState.Closed)
+                {
+                    _con.Close();
+                }
+                throw;
+            }
+
+        }
+
 
     }
 }

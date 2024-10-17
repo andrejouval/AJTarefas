@@ -43,6 +43,8 @@
   <ItemGroup>
     <Compile Include="Base\BaseResponse.cs" />
     <Compile Include="Base\EnumTextos.cs" />
+    <Compile Include="Base\EnumValid.cs" />
+    <Compile Include="Base\ErroComum.cs" />
     <Compile Include="Interfaces\Negocio\Projeto\IProjetoService.cs" />
     <Compile Include="Interfaces\Negocio\Tarefa\ITarefaService.cs" />
     <Compile Include="Interfaces\Repositorio\Projeto\IProjetoRepositorio.cs" />
@@ -53,6 +55,9 @@
     <Compile Include="Tarefa\PrioridadeTarefa.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tarefa\StatusTarefa.cs" />
+    <Compile Include="Tarefa\TarefaDto.cs" />
+    <Compile Include="Tarefa\TarefaPrioridadeDto.cs" />
+    <Compile Include="Tarefa\TarefaStatusDto.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
