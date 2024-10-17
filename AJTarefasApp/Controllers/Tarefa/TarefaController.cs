@@ -1,4 +1,5 @@
-﻿using AJTarefasApp.Controllers.Tarefa.Post;
+﻿using AJTarefasApp.Controllers.Tarefa.Patch;
+using AJTarefasApp.Controllers.Tarefa.Post;
 using AJTarefasDomain.Base;
 using AJTarefasDomain.Interfaces.Negocio.Tarefa;
 using Microsoft.AspNetCore.Mvc;
@@ -17,7 +18,7 @@ namespace AJTarefasApp.Controllers.Tarefa
         }
 
         [HttpPost]
-        public async Task<IActionResult> ProjetoAsync(PostTarefaRequest Tarefa)
+        public async Task<IActionResult> PostProjetoAsync(PostTarefaRequest Tarefa)
         {
             try
             {
@@ -25,7 +26,7 @@ namespace AJTarefasApp.Controllers.Tarefa
                 {
                     ProjetoId = Tarefa.ProjetoId,
                     Descricao = Tarefa.Descricao,
-                    PrioridadeTarefa = Tarefa.PrioridadeTarefa ?? null,
+                    PrioridadeTarefa = Tarefa.PrioridadeTarefa,
                     Titulo = Tarefa.Titulo
                 });
 
@@ -34,11 +35,11 @@ namespace AJTarefasApp.Controllers.Tarefa
                     Id = id,
                     Descricao = Tarefa.Descricao,
                     Titulo = Tarefa.Titulo,
-                    PrioridadeTarefa = Tarefa.PrioridadeTarefa != null ? new PostTarefaPrioridadeResponse()
+                    PrioridadeTarefa = new PostTarefaPrioridadeResponse()
                     {
-                        PrioridadeCode = Tarefa.PrioridadeTarefa.Value,
-                        Prioridade = Tarefa.PrioridadeTarefa.Value.GetEnumTextos()
-                    } : null,
+                        PrioridadeCode = Tarefa.PrioridadeTarefa,
+                        Prioridade = Tarefa.PrioridadeTarefa.GetEnumTextos()
+                    },
                     Status = new PostTarefaStatusResponse()
                     {
                         StatusCode = AJTarefasDomain.Tarefa.StatusTarefa.Pendente,
@@ -63,5 +64,68 @@ namespace AJTarefasApp.Controllers.Tarefa
             }
         }
 
+        [HttpPatch]
+        public async Task<IActionResult> PatchProjetoAsync(PatchTarefaRequest Tarefa)
+        {
+            try
+            {
+
+                var tarefa = new AJTarefasDomain.Tarefa.TarefaDto()
+                {
+                    Id = Tarefa.Id,
+                    ProjetoId = Tarefa.ProjetoId,
+                    Descricao = Tarefa.Descricao,
+                    PrioridadeTarefa = new AJTarefasDomain.Tarefa.TarefaPrioridadeDto()
+                    {
+                        PrioridadeCode = Tarefa.PrioridadeTarefa,
+                        Prioridade = Tarefa.PrioridadeTarefa.GetEnumTextos()
+                    },
+                    Titulo = Tarefa.Titulo,
+                    DataPrevistaTermino = Tarefa.DataPrevistaTermino,
+                    Status = new AJTarefasDomain.Tarefa.TarefaStatusDto()
+                    {
+                        StatusCode = Tarefa.StatusTarefa,
+                        Status = Tarefa.StatusTarefa.GetEnumTextos()
+                    }
+                };
+
+                var retornoTarefa = await _tarefa.PatchTarefaAsync(tarefa);
+
+                var retorno = new PatchTarefaResponse()
+                {
+                    Id = retornoTarefa.Id,
+                    Descricao = retornoTarefa.Descricao,
+                    Titulo = retornoTarefa.Titulo,
+                    PrioridadeTarefa = new PatchTarefaPrioridadeResponse()
+                    {
+                        PrioridadeCode = retornoTarefa.PrioridadeTarefa.PrioridadeCode,
+                        Prioridade = retornoTarefa.PrioridadeTarefa.Prioridade
+                    } ,
+                    Status = new PatchTarefaStatusResponse()
+                    {
+                        StatusCode = retornoTarefa.Status.StatusCode,
+                        Status = retornoTarefa.Status.Status
+                    },
+                    DataCriacao = DateTime.Now,
+                    ProjetoId = retornoTarefa.ProjetoId,
+                    DataInico = retornoTarefa.DataInicio ?? null,
+                    DataPrevistaTermino = retornoTarefa.DataPrevistaTermino ?? null,
+                    DataTermino = retornoTarefa.DataTermino ?? null
+                };
+
+                return Ok(BaseResponse<object>.SuccessResponse(retorno));
+            }
+            catch (Exception ex)
+            {
+                var message = ex.Message;
+
+                if (ex.InnerException != null)
+                {
+                    message = message + " - " + ex.InnerException.Message;
+                }
+
+                return BadRequest(BaseResponse<object>.ErrorResponse(message));
+            }
+        }
     }
 }

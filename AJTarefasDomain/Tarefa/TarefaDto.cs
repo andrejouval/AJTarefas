@@ -22,7 +22,7 @@ namespace AJTarefasDomain.Tarefa
 
         public DateTime? DataPrevistaTermino { get; set; }
 
-        public DateTime? DataTermmino  { get; set; }
+        public DateTime? DataTermino  { get; set; }
 
     }
 }

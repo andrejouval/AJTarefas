@@ -7,6 +7,7 @@ namespace AJTarefasDomain.Interfaces.Negocio.Tarefa
     {
         Task<int> PostTarefaAsync(PostTarefaRequest Tarefa);
 
-        Task PatchTarefaAsync(TarefaDto Tarefa);
+        Task<TarefaDto> PatchTarefaAsync(TarefaDto Tarefa);
+
     }
 }

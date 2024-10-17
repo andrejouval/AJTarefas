@@ -12,7 +12,7 @@ namespace AJTarefasDomain.Tarefa
         EmExecucao,
         [Description("Tarefa bloqueada")]
         Bloqueada,
-        [Description("Tarefa Concluída")]
+        [Description("Tarefa concluída")]
         Concluida
     }
 }

@@ -8,5 +8,11 @@ namespace AJTarefasDomain.Interfaces.Repositorio.Projeto
         Task<int> PostTarefaAsync(PostTarefaRequest Tarefa);
 
         Task PatchTarefaAsync(TarefaDto Tarefa);
+
+        Task<bool> TarefaExisteAsync(int ProjetoId, int Id);
+
+        Task<TarefaDto> RecuperarTarefaAsync(int ProjetoId, int Id);
+
+        Task<int> RecuperarQuantidadeTarefasAsync(int ProjetoId, int Id);
     }
 }
