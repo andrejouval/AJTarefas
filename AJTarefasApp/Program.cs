@@ -1,5 +1,7 @@
 using AJTarefasDomain.Interfaces.Negocio.Projeto;
+using AJTarefasDomain.Interfaces.Repositorio.Projeto;
 using AJTarefasNegocio.Projeto;
+using AJTarefasRecursos.Repositorios.Projeto;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +13,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<IProjetoService, ProjetoNegocio>();
+builder.Services.AddScoped<IProjetoRepositorio, ProjetoRepositorio>();
 
 var app = builder.Build();
 

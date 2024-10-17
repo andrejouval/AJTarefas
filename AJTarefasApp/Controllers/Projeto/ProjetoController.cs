@@ -18,13 +18,16 @@ namespace AJTarefasApp.Controllers.Projeto
         [HttpPost]
         public async Task<IActionResult> ProjetoAsync(PostProjetoRequest Projeto)
         {
-            var Id = await _projeto.PostProjetoAsync(new AJTarefasDomain.Projeto.Post.PostProjetoRequest()
+            var id = await _projeto.PostProjetoAsync(new AJTarefasDomain.Projeto.Post.PostProjetoRequest()
             {
                 NomeProjeto = Projeto.NomeProjeto,
                 DescricaoProjeto = Projeto.DescricaoProjeto
             });
 
-            return Ok();
+            return Ok(new PostProjetoResponse()
+            {
+                Id = id
+            });
         }
     }
 }
