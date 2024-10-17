@@ -44,9 +44,12 @@
     <Compile Include="Base\BaseResponse.cs" />
     <Compile Include="Base\EnumTextos.cs" />
     <Compile Include="Interfaces\Negocio\Projeto\IProjetoService.cs" />
+    <Compile Include="Interfaces\Negocio\Tarefa\ITarefaService.cs" />
     <Compile Include="Interfaces\Repositorio\Projeto\IProjetoRepositorio.cs" />
+    <Compile Include="Interfaces\Repositorio\Tarefa\ITarefaRepositorio.cs" />
     <Compile Include="Projeto\PostProjetoRequest.cs" />
     <Compile Include="Projeto\StatusProjeto.cs" />
+    <Compile Include="Tarefa\PostTarefaRequest.cs" />
     <Compile Include="Tarefa\PrioridadeTarefa.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tarefa\StatusTarefa.cs" />
