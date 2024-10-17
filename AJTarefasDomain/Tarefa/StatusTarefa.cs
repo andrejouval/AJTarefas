@@ -1,8 +1,18 @@
 ﻿
+using System.ComponentModel;
+
 namespace AJTarefasDomain.Tarefa
 {
     public enum StatusTarefa
     {
-        Pendente = 1, EmExecucao, Bloqueada, Concluida
+
+        [Description("Tarefa pendente")]
+        Pendente = 1,
+        [Description("Tarefa em execução")]
+        EmExecucao,
+        [Description("Tarefa bloqueada")]
+        Bloqueada,
+        [Description("Tarefa Concluída")]
+        Concluida
     }
 }
