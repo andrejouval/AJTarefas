@@ -1,4 +1,5 @@
 using AJTarefasDomain.Interfaces.Negocio.Projeto;
+using AJTarefasDomain.Interfaces.Negocio.Tarefa;
 using AJTarefasDomain.Interfaces.Repositorio.Projeto;
 using AJTarefasNegocio.Projeto;
 using AJTarefasRecursos.Repositorios.Projeto;
@@ -14,6 +15,9 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<IProjetoService, ProjetoNegocio>();
 builder.Services.AddScoped<IProjetoRepositorio, ProjetoRepositorio>();
+
+builder.Services.AddScoped<ITarefaService, TarefaNegocio>();
+builder.Services.AddScoped<ITarefaRepositorio, TarefaRepositorio>();
 
 var app = builder.Build();
 

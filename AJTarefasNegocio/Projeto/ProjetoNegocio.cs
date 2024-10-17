@@ -24,7 +24,8 @@ namespace AJTarefasNegocio.Projeto
             {
                 throw new System.Exception("A descrição do projeto é obrigarório");
             }
-            return await _projetoRepositorio.PostProjeto(Projeto);
+
+            return await _projetoRepositorio.PostProjetoAsync(Projeto);
         }
     }
 }

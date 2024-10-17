@@ -1,7 +1,18 @@
-﻿namespace AJTarefasDomain.Projeto
+﻿using System.ComponentModel;
+
+namespace AJTarefasDomain.Projeto
 {
     public enum StatusProjeto
     {
-        Pendente = 1, EmExecucao, Suspenso, Cancelado, Concluido
+        [Description("Projeto pendente")]
+        Pendente = 1,
+        [Description("Projeto em execução")]
+        EmExecucao,
+        [Description("Projeto suspenso")]
+        Suspenso,
+        [Description("Projeto cancelado")]
+        Cancelado,
+        [Description("Projeto concluído")]
+        Concluido
     }
 }

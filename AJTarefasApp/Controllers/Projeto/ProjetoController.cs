@@ -29,7 +29,15 @@ namespace AJTarefasApp.Controllers.Projeto
 
                 var retorno = new PostProjetoResponse()
                 {
-                    Id = id
+                    Id = id,
+                    NomeProjeto = Projeto.NomeProjeto,
+                    DescricaoProjeto = Projeto.DescricaoProjeto,
+                    DataCriacao = DateTime.Now,
+                    StatusProjeto = new PostProjetoStatusResponse()
+                    {
+                        StatusCode = AJTarefasDomain.Projeto.StatusProjeto.Pendente,
+                        Status = AJTarefasDomain.Projeto.StatusProjeto.Pendente.GetEnumTextos()
+                    }
                 };
 
                 return Ok(BaseResponse<object>.SuccessResponse(retorno));
