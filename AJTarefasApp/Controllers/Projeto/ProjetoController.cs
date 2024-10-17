@@ -1,4 +1,5 @@
 ﻿using AJTarefasApp.Controllers.Projeto.Post;
+using AJTarefasDomain.Base;
 using AJTarefasDomain.Interfaces.Negocio.Projeto;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,16 +19,32 @@ namespace AJTarefasApp.Controllers.Projeto
         [HttpPost]
         public async Task<IActionResult> ProjetoAsync(PostProjetoRequest Projeto)
         {
-            var id = await _projeto.PostProjetoAsync(new AJTarefasDomain.Projeto.Post.PostProjetoRequest()
+            try
             {
-                NomeProjeto = Projeto.NomeProjeto,
-                DescricaoProjeto = Projeto.DescricaoProjeto
-            });
+                var id = await _projeto.PostProjetoAsync(new AJTarefasDomain.Projeto.Post.PostProjetoRequest()
+                {
+                    NomeProjeto = Projeto.NomeProjeto,
+                    DescricaoProjeto = Projeto.DescricaoProjeto
+                });
 
-            return Ok(new PostProjetoResponse()
+                var retorno = new PostProjetoResponse()
+                {
+                    Id = id
+                };
+
+                return Ok(BaseResponse<object>.SuccessResponse(retorno));
+            }
+            catch (Exception ex)
             {
-                Id = id
-            });
+                var message = ex.Message;
+
+                if (ex.InnerException != null)
+                {
+                    message = message + " - " + ex.InnerException.Message;
+                }
+
+                return BadRequest(BaseResponse<object>.ErrorResponse(message));
+            }
         }
     }
 }
