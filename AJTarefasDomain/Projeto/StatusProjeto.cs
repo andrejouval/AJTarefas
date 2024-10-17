@@ -1,4 +1,4 @@
-﻿namespace AJTarefasDomain.Projetos
+﻿namespace AJTarefasDomain.Projeto
 {
     public enum StatusProjeto
     {

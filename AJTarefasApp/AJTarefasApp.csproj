@@ -16,11 +16,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\Projetos\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\AJTarefasDomain\AJTarefasDomain.csproj" />
     <ProjectReference Include="..\AJTarefasNegocio\AJTarefasNegocio.csproj" />
   </ItemGroup>
 

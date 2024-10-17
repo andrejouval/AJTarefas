@@ -1,5 +1,5 @@
 ﻿
-namespace AJTarefasDomain.Tarefas
+namespace AJTarefasDomain.Tarefa
 {
     public enum StatusTarefa
     {

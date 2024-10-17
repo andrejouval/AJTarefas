@@ -41,10 +41,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Projetos\StatusProjeto.cs" />
-    <Compile Include="Tarefas\PrioridadeTarefa.cs" />
+    <Compile Include="Interfaces\Negocio\Projeto\IProjetoService.cs" />
+    <Compile Include="Projeto\PostProjetoRequest.cs" />
+    <Compile Include="Projeto\StatusProjeto.cs" />
+    <Compile Include="Tarefa\PrioridadeTarefa.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Tarefas\StatusTarefa.cs" />
+    <Compile Include="Tarefa\StatusTarefa.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
