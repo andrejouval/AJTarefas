@@ -2,6 +2,7 @@
 using AJTarefasDomain.Interfaces.Negocio.Projeto;
 using AJTarefasDomain.Interfaces.Negocio.Tarefa;
 using AJTarefasDomain.Interfaces.Repositorio.Projeto;
+using AJTarefasDomain.Projeto;
 using AJTarefasDomain.Tarefa;
 using System;
 using System.Threading.Tasks;
@@ -206,6 +207,14 @@ namespace AJTarefasNegocio.Projeto
             return erroComum;
         }
 
+        public async Task<TarefaDto> GetTarefaAsync(int ProjetoId, int Id)
+        {
+            return await _tarefaRepositorio.RecuperarTarefaAsync(ProjetoId, Id);
+        }
 
+        public async Task DeleteTarefaAsync(int ProjetoId, int Id)
+        {
+            await _tarefaRepositorio.DeleteTarefaAsync(ProjetoId, Id);
+        }
     }
 }

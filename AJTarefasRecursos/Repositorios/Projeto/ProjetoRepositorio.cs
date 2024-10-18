@@ -193,5 +193,59 @@ namespace AJTarefasRecursos.Repositorios.Projeto
 
         }
 
+        public async Task<int> RecuperarQuantidadeTarefasAsync(int ProjetoId)
+        {
+            var cmd = new SqlCommand(@"select count(1) from Projetos p inner join Tarefas t 
+                                        on t.ProjetoId = p.Id where p.Id = " + ProjetoId, _con);
+
+            cmd.CommandType = System.Data.CommandType.Text;
+
+            try
+            {
+                _con.Open();
+
+                var quantidade = await cmd.ExecuteScalarAsync();
+
+                _con.Close();
+
+                return Convert.ToInt32(quantidade);
+            }
+            catch (System.Exception)
+            {
+                if (_con.State != System.Data.ConnectionState.Closed)
+                {
+                    _con.Close();
+                }
+                throw;
+            }
+
+        }
+
+        public async Task DeleteProjetoAsync(int ProjetoId)
+        {
+            var cmd = new SqlCommand(@"delete Projetos where Id = " + ProjetoId, _con);
+
+            cmd.CommandType = System.Data.CommandType.Text;
+
+            try
+            {
+                _con.Open();
+
+                await cmd.ExecuteNonQueryAsync();
+
+                _con.Close();
+
+            }
+            catch (System.Exception)
+            {
+                if (_con.State != System.Data.ConnectionState.Closed)
+                {
+                    _con.Close();
+                }
+                throw;
+            }
+
+        }
+
     }
 }

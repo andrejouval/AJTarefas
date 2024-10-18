@@ -13,5 +13,9 @@ namespace AJTarefasDomain.Interfaces.Repositorio.Projeto
         Task<ProjetoDto> RecuperarProjetoAsync(int ProjetoId);
 
         Task PatchProjetoAsync(int ProjetoId);
+
+        Task DeleteProjetoAsync(int ProjetoId);
+
+        Task<int> RecuperarQuantidadeTarefasAsync(int ProjetoId);
     }
 }

@@ -431,6 +431,82 @@ namespace AJTarefasRecursos.Repositorios.Projeto
 
         }
 
+        public async Task DeleteTarefaAsync(int ProjetoId, int Id)
+        {
+            var cmd = new SqlCommand(@"delete from Tarefas where ProjetoId = " + ProjetoId + " and Id = " + Id , _con);
 
+            cmd.CommandType = System.Data.CommandType.Text;
+
+            try
+            {
+                _con.Open();
+
+                _tr = _con.BeginTransaction();
+
+                cmd.Transaction = _tr;
+
+                await DeleteComentarios(ProjetoId, Id);
+
+                await DeleteHistorico(ProjetoId, Id);
+
+                await cmd.ExecuteNonQueryAsync();
+
+                _tr.Commit();
+
+                _con.Close();
+
+            }
+            catch (System.Exception)
+            {
+                _tr.Rollback();
+
+                if (_con.State != ConnectionState.Closed )
+                {
+                    _con.Close();
+                }
+                throw;
+            }
+
+        }
+
+        private async Task DeleteComentarios(int ProjetoId, int Id)
+        {
+            var cmd = new SqlCommand(@"delete from ComentariosTarefas where ProjetoId = " + ProjetoId + " and TarefaId = " + Id, _con);
+
+            cmd.CommandType = System.Data.CommandType.Text;
+
+            try
+            {
+                cmd.Transaction = _tr;
+
+                await cmd.ExecuteNonQueryAsync();
+
+            }
+            catch (System.Exception)
+            {
+                throw;
+            }
+
+        }
+
+        private async Task DeleteHistorico(int ProjetoId, int Id)
+        {
+            var cmd = new SqlCommand(@"delete from HistoricoTarefas where ProjetoId = " + ProjetoId + " and TarefaId = " + Id, _con);
+
+            cmd.CommandType = System.Data.CommandType.Text;
+
+            try
+            {
+                cmd.Transaction = _tr;
+
+                await cmd.ExecuteNonQueryAsync();
+
+            }
+            catch (System.Exception)
+            {
+                throw;
+            }
+
+        }
     }
 }

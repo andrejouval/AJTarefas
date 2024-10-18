@@ -65,5 +65,29 @@ namespace AJTarefasApp.Controllers.Projeto
                 return BadRequest(BaseResponse<object>.ErrorResponse(message));
             }
         }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> ProjetoAsync([FromRoute(Name = "id")] int Id)
+        {
+            try
+            {
+                await _projeto.DeleteProjetoAsync(Id);
+
+
+                return Ok(BaseResponse<object>.SuccessResponse(null));
+            }
+            catch (Exception ex)
+            {
+                var message = ex.Message;
+
+                if (ex.InnerException != null)
+                {
+                    message = message + " - " + ex.InnerException.Message;
+                }
+
+                return BadRequest(BaseResponse<object>.ErrorResponse(message));
+            }
+        }
+
     }
 }
