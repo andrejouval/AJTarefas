@@ -9,5 +9,9 @@ namespace AJTarefasDomain.Interfaces.Negocio.Tarefa
 
         Task<TarefaDto> PatchTarefaAsync(TarefaDto Tarefa);
 
+        Task<TarefaDto> GetTarefaAsync(int ProjetoId, int Id);
+
+        Task DeleteTarefaAsync(int ProjetoId, int Id);
+
     }
 }

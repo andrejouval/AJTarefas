@@ -10,5 +10,7 @@ namespace AJTarefasDomain.Interfaces.Negocio.Projeto
         Task<ProjetoDto> PostProjetoAsync(PostProjetoRequest Projeto);
 
         Task PatchProjetoAsync(int ProjetoId);
+
+        Task DeleteProjetoAsync(int ProjetoId);
     }
 }

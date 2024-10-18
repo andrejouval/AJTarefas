@@ -43,5 +43,16 @@ namespace AJTarefasNegocio.Projeto
             await _projetoRepositorio.PatchProjetoAsync(ProjetoId);
         }
 
+        public async Task DeleteProjetoAsync(int ProjetoId)
+        {
+            var quantidadeTerefas = await _projetoRepositorio.RecuperarQuantidadeTarefasAsync(ProjetoId);
+
+            if(quantidadeTerefas > 0)
+            {
+                throw new System.Exception("Não é possível remover o projeto com tarefas associadas");
+            }
+
+            await _projetoRepositorio.DeleteProjetoAsync(ProjetoId);
+        }
     }
 }

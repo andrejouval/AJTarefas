@@ -120,7 +120,7 @@ namespace AJTarefasApp.Controllers.Tarefa
                     {
                         PrioridadeCode = retornoTarefa.PrioridadeTarefa.PrioridadeCode,
                         Prioridade = retornoTarefa.PrioridadeTarefa.Prioridade
-                    } ,
+                    },
                     Status = new PatchTarefaStatusResponse()
                     {
                         StatusCode = retornoTarefa.Status.StatusCode,
@@ -143,8 +143,8 @@ namespace AJTarefasApp.Controllers.Tarefa
                     },
                     Comentarios = retornoTarefa.Comentarios.Select(c => new PatchTarefaComentarioResponse()
                     {
-                         IdUsuario = c.IdUsuario,
-                         Comentario = c.Comentario
+                        IdUsuario = c.IdUsuario,
+                        Comentario = c.Comentario
                     })
                 };
 
@@ -162,5 +162,91 @@ namespace AJTarefasApp.Controllers.Tarefa
                 return BadRequest(BaseResponse<object>.ErrorResponse(message));
             }
         }
+
+        [HttpGet("{projetoId}/{id}")]
+        public async Task<IActionResult> GetProjetoAsync([FromRoute(Name = "projetoId")] int ProjetoId,
+                                                         [FromRoute(Name = "id")] int Id)
+        {
+            try
+            {
+
+                var retornoTarefa = await _tarefa.GetTarefaAsync(ProjetoId, Id);
+
+                var retorno = new PatchTarefaResponse()
+                {
+                    Id = retornoTarefa.Id,
+                    Descricao = retornoTarefa.Descricao,
+                    Titulo = retornoTarefa.Titulo,
+                    PrioridadeTarefa = new PatchTarefaPrioridadeResponse()
+                    {
+                        PrioridadeCode = retornoTarefa.PrioridadeTarefa.PrioridadeCode,
+                        Prioridade = retornoTarefa.PrioridadeTarefa.Prioridade
+                    },
+                    Status = new PatchTarefaStatusResponse()
+                    {
+                        StatusCode = retornoTarefa.Status.StatusCode,
+                        Status = retornoTarefa.Status.Status
+                    },
+                    DataCriacao = DateTime.Now,
+                    ProjetoId = retornoTarefa.ProjetoId,
+                    DataInico = retornoTarefa.DataInicio ?? null,
+                    DataPrevistaTermino = retornoTarefa.DataPrevistaTermino ?? null,
+                    DataTermino = retornoTarefa.DataTermino ?? null,
+                    Usuario = new Projeto.Base.BaseUsuarioResponse()
+                    {
+                        Nome = retornoTarefa.Usuario.Nome,
+                        UsuarioId = retornoTarefa.Usuario.UsuarioId,
+                        UsuariosPapel = new Projeto.Base.BaseUsuarioPapelResponse()
+                        {
+                            UsuariosPapelCode = retornoTarefa.Usuario.Papel.UsuarioPapelCode,
+                            Papel = retornoTarefa.Usuario.Papel.Papel
+                        }
+                    },
+                    Comentarios = retornoTarefa.Comentarios.Select(c => new PatchTarefaComentarioResponse()
+                    {
+                        IdUsuario = c.IdUsuario,
+                        Comentario = c.Comentario
+                    })
+                };
+
+                return Ok(BaseResponse<object>.SuccessResponse(retorno));
+            }
+            catch (Exception ex)
+            {
+                var message = ex.Message;
+
+                if (ex.InnerException != null)
+                {
+                    message = message + " - " + ex.InnerException.Message;
+                }
+
+                return BadRequest(BaseResponse<object>.ErrorResponse(message));
+            }
+        }
+
+        [HttpDelete("{projetoId}/{id}")]
+        public async Task<IActionResult> DeleteProjetoAsync([FromRoute(Name = "projetoId")] int ProjetoId,
+                                                         [FromRoute(Name = "id")] int Id)
+        {
+            try
+            {
+
+                await _tarefa.DeleteTarefaAsync(ProjetoId, Id);
+
+                return Ok(BaseResponse<object>.SuccessResponse(null));
+            }
+            catch (Exception ex)
+            {
+                var message = ex.Message;
+
+                if (ex.InnerException != null)
+                {
+                    message = message + " - " + ex.InnerException.Message;
+                }
+
+                return BadRequest(BaseResponse<object>.ErrorResponse(message));
+            }
+        }
+
     }
 }
