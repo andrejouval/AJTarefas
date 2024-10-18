@@ -19,7 +19,7 @@ namespace AJTarefasNegocio.Projeto
         {
             if (string.IsNullOrWhiteSpace(Projeto.NomeProjeto))
             {
-                throw new System.Exception("O nome do projeto é obrigatório.");
+                throw new System.Exception("O nome do projeto é obrigatório ou é inexistente.");
             }
 
             if (string.IsNullOrWhiteSpace(Projeto.DescricaoProjeto))
@@ -29,7 +29,7 @@ namespace AJTarefasNegocio.Projeto
 
             if (Projeto.UsuarioId == 0)
             {
-                throw new System.Exception("Usuário é obrigatório");
+                throw new System.Exception("Usuário é obrigatório ou é inexistente.");
             }
 
             var id = await _projetoRepositorio.PostProjetoAsync(Projeto);

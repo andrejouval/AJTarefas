@@ -3,12 +3,9 @@ using AJTarefasDomain.Interfaces.Repositorio.Projeto;
 using AJTarefasDomain.Tarefa;
 using Microsoft.Extensions.Configuration;
 using System;
-using System.CodeDom;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using System.Diagnostics.Contracts;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace AJTarefasRecursos.Repositorios.Projeto
@@ -321,9 +318,9 @@ namespace AJTarefasRecursos.Repositorios.Projeto
 
         }
 
-        public async Task<int> RecuperarQuantidadeTarefasAsync(int ProjetoId, int Id)
+        public async Task<int> RecuperarQuantidadeTarefasAsync(int ProjetoId)
         {
-            var cmd = new SqlCommand(@"select count(1) from Tarefas where Id = " + Id + " and ProjetoId = " + ProjetoId, _con);
+            var cmd = new SqlCommand(@"select count(1) from Tarefas where ProjetoId = " + ProjetoId, _con);
 
             cmd.CommandType = System.Data.CommandType.Text;
 
@@ -331,11 +328,11 @@ namespace AJTarefasRecursos.Repositorios.Projeto
             {
                 _con.Open();
 
-                var prioridade = await cmd.ExecuteScalarAsync();
+                var quantidade = await cmd.ExecuteScalarAsync();
 
                 _con.Close();
 
-                return Convert.ToInt32(prioridade);
+                return Convert.ToInt32(quantidade);
             }
             catch (System.Exception)
             {

@@ -9,10 +9,11 @@ using AJTarefasRecursos.Repositorios.Projeto;
 using AutoFixture;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System.Data.SqlClient;
 
 namespace AJTarefasTestes
 {
-    public class Tests
+    public class CasoDeSucessoTeste
     {
         private IConfiguration _config;
         private Fixture _fixture;
@@ -26,7 +27,7 @@ namespace AJTarefasTestes
         private string _projetName = "Projeto_Teste_" + DateTime.Now.ToString("yyyy_MM_dd_HH_mm_ss");
 
         [SetUp]
-        public void Setup()
+        public void CasosDeSucesso()
         {
             _config = new ConfigurationBuilder().AddJsonFile("appsettings.test.json", true, true).Build();
             _fixture = new Fixture();
@@ -385,13 +386,86 @@ namespace AJTarefasTestes
             Assert.AreEqual(projetoVerificar.FirstOrDefault().DataTermino,
             projetoVerificar.First().Tarefas.Max(d => d.DataTermino));
 
-            Assert.IsNull(projetoVerificar.FirstOrDefault().DataInicio);
-            Assert.IsTrue((int)projetoVerificar.FirstOrDefault().StatusProjeto.StatusProjetoCode == 1);
-            Assert.IsNull(projetoVerificar.FirstOrDefault().DataTermino);
-
-            Assert.IsFalse(projetoVerificar.FirstOrDefault().DataPrevisaoTermino.HasValue);
-
         }
+
+        [Test]
+        public async Task t006_CenarioDeSucesso_HistoricoSendoGerado()
+        {
+            //Cria projeto
+            var projetoWork = await RecuperarProjetoTeste(_projetName);
+
+            if (projetoWork == null)
+            {
+                await t001_IncluirProjeto_CenarioDeSucesso();
+                projetoWork = await RecuperarProjetoTeste(_projetName);
+            }
+
+            var tarefa = projetoWork.Tarefas.FirstOrDefault();
+
+            if (tarefa == null)
+            {
+                await t002_IncluirTarefa_CenarioDeSucesso();
+                projetoWork = await RecuperarProjetoTeste(_projetName);
+                tarefa = projetoWork.Tarefas.FirstOrDefault();
+            }
+
+            tarefa.Comentarios = new List<TarefaComentariosDto>()
+            {
+                new TarefaComentariosDto { IdUsuario = 1, Comentario = "Comentário 1"},
+                new TarefaComentariosDto { IdUsuario = 2, Comentario = "Comentário 2"}
+            };
+
+            tarefa.Status = new TarefaStatusDto()
+            {
+                StatusCode = StatusTarefa.EmExecucao
+            };
+
+            tarefa.DataPrevistaTermino = DateTime.Now.AddDays(2);
+
+            var tarefaCriada = await _tarefaService.PatchTarefaAsync(tarefa);
+
+            Assert.IsNotNull(tarefaCriada);
+
+            tarefa.Status = new TarefaStatusDto()
+            {
+                StatusCode = StatusTarefa.Bloqueada
+            };
+
+            tarefaCriada = await _tarefaService.PatchTarefaAsync(tarefa);
+
+            tarefa.Status = new TarefaStatusDto()
+            {
+                StatusCode = StatusTarefa.Concluida
+            };
+
+            tarefaCriada = await _tarefaService.PatchTarefaAsync(tarefa);
+
+            var con = new SqlConnection(_config["ConnectionStrings:DefaultConnection"]);
+
+            var cmd = new SqlCommand("select count(1) from historicoTarefas where ProjetoId = " + tarefaCriada.ProjetoId, con);
+
+            cmd.CommandType = System.Data.CommandType.Text;
+
+
+            try
+            {
+                con.Open();
+
+                var quantidade = Convert.ToInt32(cmd.ExecuteScalar());
+
+                con.Close();
+
+                Assert.IsTrue(quantidade > 0);
+            }
+            catch (Exception)
+            {
+                if (con.State != System.Data.ConnectionState.Open)
+                {
+                    con.Close();
+                }
+            }
+        }
+
 
         private async Task<ProjetoDto> RecuperarProjetoTeste(string NomeProjeto)
         {

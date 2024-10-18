@@ -2,7 +2,6 @@
 using AJTarefasDomain.Interfaces.Negocio.Projeto;
 using AJTarefasDomain.Interfaces.Negocio.Tarefa;
 using AJTarefasDomain.Interfaces.Repositorio.Projeto;
-using AJTarefasDomain.Projeto;
 using AJTarefasDomain.Tarefa;
 using System;
 using System.Threading.Tasks;
@@ -91,7 +90,7 @@ namespace AJTarefasNegocio.Projeto
 
             if (!tarefaExiste)
             {
-                throw new System.Exception("A tarefa " +  Tarefa.Id + "não pertence ao projeto ou não é válida");
+                throw new System.Exception("A tarefa " +  Tarefa.Id + " não pertence ao projeto ou não é válida");
             }
 
             if (!Tarefa.Status.StatusCode.IsValid())
@@ -143,6 +142,8 @@ namespace AJTarefasNegocio.Projeto
             else
             {
                 await _tarefaRepositorio.PatchTarefaAsync(Tarefa);
+
+                await _projetoService.PatchProjetoAsync(Tarefa.ProjetoId);
             }
 
             var retorno = await _tarefaRepositorio.RecuperarTarefaAsync(Tarefa.ProjetoId, Tarefa.Id);
@@ -189,7 +190,7 @@ namespace AJTarefasNegocio.Projeto
                 erroComum.MensagemError = "Favor entrar um código de projeto existente";
             }
 
-            var numeroTerefas = await _tarefaRepositorio.RecuperarQuantidadeTarefasAsync(Tarefa.Id, Tarefa.ProjetoId);
+            var numeroTerefas = await _tarefaRepositorio.RecuperarQuantidadeTarefasAsync(Tarefa.ProjetoId);
 
             if (numeroTerefas > 20)
             {
