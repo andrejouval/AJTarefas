@@ -164,13 +164,13 @@ namespace AJTarefasApp.Controllers.Tarefa
         }
 
         [HttpGet("{projetoId}/{id}")]
-        public async Task<IActionResult> GetProjetoAsync([FromRoute(Name = "projetoId")] int ProjetoId,
+        public async Task<IActionResult> GetTarefaAsync([FromRoute(Name = "projetoId")] int ProjetoId,
                                                          [FromRoute(Name = "id")] int Id)
         {
             try
             {
 
-                var retornoTarefa = await _tarefa.GetTarefaAsync(ProjetoId, Id);
+                var retornoTarefa = await _tarefa.RecuperarTarefaAsync(ProjetoId, Id);
 
                 var retorno = new PatchTarefaResponse()
                 {
@@ -225,7 +225,7 @@ namespace AJTarefasApp.Controllers.Tarefa
         }
 
         [HttpDelete("{projetoId}/{id}")]
-        public async Task<IActionResult> DeleteProjetoAsync([FromRoute(Name = "projetoId")] int ProjetoId,
+        public async Task<IActionResult> DeleteTarefaAsync([FromRoute(Name = "projetoId")] int ProjetoId,
                                                          [FromRoute(Name = "id")] int Id)
         {
             try

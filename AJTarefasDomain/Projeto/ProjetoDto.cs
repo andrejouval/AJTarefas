@@ -1,5 +1,7 @@
 ﻿using AJTarefasDomain.Base;
+using AJTarefasDomain.Tarefa;
 using System;
+using System.Collections.Generic;
 
 namespace AJTarefasDomain.Projeto
 {
@@ -22,5 +24,7 @@ namespace AJTarefasDomain.Projeto
         public ProjetoStatusDto StatusProjeto { get; set; }
 
         public UsuarioDto Usuario { get; set; }
+
+        public IEnumerable<TarefaDto> Tarefas { get; set; }
     }
 }

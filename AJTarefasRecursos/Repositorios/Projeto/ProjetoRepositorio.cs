@@ -2,9 +2,13 @@
 using AJTarefasDomain.Interfaces.Repositorio.Projeto;
 using AJTarefasDomain.Projeto;
 using AJTarefasDomain.Projeto.Post;
+using AJTarefasDomain.Tarefa;
 using Microsoft.Extensions.Configuration;
 using System;
+using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace AJTarefasRecursos.Repositorios.Projeto
@@ -12,9 +16,11 @@ namespace AJTarefasRecursos.Repositorios.Projeto
     public class ProjetoRepositorio : IProjetoRepositorio
     {
         private SqlConnection _con = new SqlConnection();
-        public ProjetoRepositorio(IConfiguration configuration) 
+        private readonly ITarefaRepositorio _tarefaRepositorio;
+        public ProjetoRepositorio(IConfiguration configuration, ITarefaRepositorio tarefaRepositorio) 
         {
             _con.ConnectionString = configuration["ConnectionStrings:DefaultConnection"];
+            _tarefaRepositorio = tarefaRepositorio;
         }
 
         public async Task<int> PostProjetoAsync(PostProjetoRequest Projeto)
@@ -92,77 +98,11 @@ namespace AJTarefasRecursos.Repositorios.Projeto
 
         public async Task<ProjetoDto> RecuperarProjetoAsync(int ProjetoId)
         {
-            var projeto = new ProjetoDto();
+            var projetos = await RecuperarProjetosAsync();
 
-            var cmd = new SqlCommand(@"select p.Id, p.NomeProjeto, p.DescricaoProjeto, p.DataCriacao, p.DataInicio, 
-                                        p.DataTermino, p.DataPrevisaoTermino, p.StatusProjeto, p.UsuarioId,
-                                        u.Nome, u.Papel
-                                        from Projetos p
-                                        inner join Usuarios u
-                                        on p.UsuarioId = u.Id 
-                                        where p.Id = " + ProjetoId, _con);
+            var projeto = projetos.Where(p => p.Id == ProjetoId).FirstOrDefault();
 
-            cmd.CommandType = System.Data.CommandType.Text;
-
-            try
-            {
-                _con.Open();
-
-                var reader = await cmd.ExecuteReaderAsync();
-
-                while (reader.Read())
-                {
-                    projeto.Id = Convert.ToInt32(reader["Id"]);
-                    projeto.Descricao = reader["DescricaoProjeto"].ToString();
-                    projeto.Nome = reader["NomeProjeto"].ToString();
-                    projeto.DataCriacao = Convert.ToDateTime(reader["DataCriacao"]);
-                    projeto.StatusProjeto = new ProjetoStatusDto()
-                    {
-                        StatusProjetoCode = (StatusProjeto)Convert.ToInt32(reader["StatusProjeto"]),
-                        Status = ((StatusProjeto)Convert.ToInt32(reader["StatusProjeto"])).GetEnumTextos()
-                    };
-                    projeto.Usuario = new UsuarioDto()
-                    {
-                        Nome = reader["Nome"].ToString(),
-                        UsuarioId = Convert.ToInt32(reader["UsuarioId"]),
-                        Papel = new UsuarioPapelDto()
-                        {
-                            UsuarioPapelCode = (UsuariosPapel)Convert.ToInt32(reader["Papel"]),
-                            Papel = ((UsuariosPapel)Convert.ToInt32(reader["Papel"])).GetEnumTextos()
-                        }
-                    };
-
-                    if (reader["DataInicio"] != DBNull.Value)
-                    {
-                        projeto.DataInicio = Convert.ToDateTime(reader["DataInicio"]);
-                    }
-
-                    if (reader["DataPrevisaoTermino"] != DBNull.Value)
-                    {
-                        projeto.DataPrevisaoTermino = Convert.ToDateTime(reader["DataPrevisaoTermino"]);
-                    }
-
-                    if (reader["DataTermino"] != DBNull.Value)
-                    {
-                        projeto.DataTermino = Convert.ToDateTime(reader["DataTermino"]);
-                    }
-
-
-                }
-
-                _con.Close();
-
-                return projeto;
-            }
-            catch (System.Exception)
-            {
-                if (_con.State != System.Data.ConnectionState.Closed)
-                {
-                    _con.Close();
-                }
-                throw;
-            }
-
+            return projeto;
         }
 
         public async Task PatchProjetoAsync(int ProjetoId)
@@ -246,6 +186,113 @@ namespace AJTarefasRecursos.Repositorios.Projeto
             }
 
         }
+
+        public async Task<IEnumerable<ProjetoDto>> RecuperarProjetosAsync()
+        {
+            var projetos = new List<ProjetoDto>();
+
+            ProjetoDto projeto = null;
+
+            List<TarefaDto> tarefas = null;
+
+            var cmd = new SqlCommand(@"select p.Id, p.NomeProjeto, p.DescricaoProjeto, p.DataCriacao, p.DataInicio, 
+                                        p.DataTermino, p.DataPrevisaoTermino, p.StatusProjeto, p.UsuarioId,
+                                        u.Nome, u.Papel, t.Id as 'TarefaId'
+                                        from Projetos p
+                                        inner join Usuarios u
+                                        on p.UsuarioId = u.Id 
+		                                left join Tarefas t
+		                                on t.ProjetoId = p.Id", _con);
+
+            cmd.CommandType = System.Data.CommandType.Text;
+
+            var projetoAtual = 0;
+
+            try
+            {
+                _con.Open();
+
+                var reader = await cmd.ExecuteReaderAsync();
+
+                while (reader.Read())
+                {
+                    if (projetoAtual != Convert.ToInt32(reader["Id"]))
+                    {
+                        if (projeto != null)
+                        {
+                            projetos.Add(projeto);
+                        }
+
+                        projetoAtual = Convert.ToInt32(reader["Id"]);
+
+                        tarefas = new List<TarefaDto>();
+
+                        projeto = new ProjetoDto()
+                        {
+                            Id = Convert.ToInt32(reader["Id"]),
+                            Descricao = reader["DescricaoProjeto"].ToString(),
+                            Nome = reader["NomeProjeto"].ToString(),
+                            DataCriacao = Convert.ToDateTime(reader["DataCriacao"]),
+                            StatusProjeto = new ProjetoStatusDto()
+                            {
+                                StatusProjetoCode = (StatusProjeto)Convert.ToInt32(reader["StatusProjeto"]),
+                                Status = ((StatusProjeto)Convert.ToInt32(reader["StatusProjeto"])).GetEnumTextos()
+                            },
+                            Usuario = new UsuarioDto()
+                            {
+                                Nome = reader["Nome"].ToString(),
+                                UsuarioId = Convert.ToInt32(reader["UsuarioId"]),
+                                Papel = new UsuarioPapelDto()
+                                {
+                                    UsuarioPapelCode = (UsuariosPapel)Convert.ToInt32(reader["Papel"]),
+                                    Papel = ((UsuariosPapel)Convert.ToInt32(reader["Papel"])).GetEnumTextos()
+                                }
+                            }
+                        };
+
+                        if (reader["DataInicio"] != DBNull.Value)
+                        {
+                            projeto.DataInicio = Convert.ToDateTime(reader["DataInicio"]);
+                        }
+
+                        if (reader["DataPrevisaoTermino"] != DBNull.Value)
+                        {
+                            projeto.DataPrevisaoTermino = Convert.ToDateTime(reader["DataPrevisaoTermino"]);
+                        }
+
+                        if (reader["DataTermino"] != DBNull.Value)
+                        {
+                            projeto.DataTermino = Convert.ToDateTime(reader["DataTermino"]);
+                        }
+
+                        projeto.Tarefas = tarefas;
+                    }
+
+                    if (reader["TarefaId"] != DBNull.Value)
+                    {
+                        var tarefa = await _tarefaRepositorio.RecuperarTarefaAsync(projetoAtual, Convert.ToInt32(reader["TarefaId"]));
+
+                        tarefas.Add(tarefa);
+                    }
+                }
+
+                projetos.Add(projeto);
+
+                _con.Close();
+
+                return projetos;
+            }
+            catch (System.Exception)
+            {
+                if (_con.State != System.Data.ConnectionState.Closed)
+                {
+                    _con.Close();
+                }
+                throw;
+            }
+
+        }
+
 
     }
 }

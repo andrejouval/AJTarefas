@@ -1,4 +1,5 @@
-﻿using AJTarefasApp.Controllers.Projeto.Post;
+﻿using AJTarefasApp.Controllers.Projeto.Get;
+using AJTarefasApp.Controllers.Projeto.Post;
 using AJTarefasDomain.Base;
 using AJTarefasDomain.Interfaces.Negocio.Projeto;
 using Microsoft.AspNetCore.Mvc;
@@ -67,7 +68,7 @@ namespace AJTarefasApp.Controllers.Projeto
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> ProjetoAsync([FromRoute(Name = "id")] int Id)
+        public async Task<IActionResult> DeleteProjetoAsync([FromRoute(Name = "id")] int Id)
         {
             try
             {
@@ -89,5 +90,26 @@ namespace AJTarefasApp.Controllers.Projeto
             }
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetProjetoAsync()
+        {
+            try
+            {
+                var projetos = await _projeto.RecuperarProjetosAsync();
+
+                return Ok(BaseResponse<object>.SuccessResponse(projetos));
+            }
+            catch (Exception ex)
+            {
+                var message = ex.Message;
+
+                if (ex.InnerException != null)
+                {
+                    message = message + " - " + ex.InnerException.Message;
+                }
+
+                return BadRequest(BaseResponse<object>.ErrorResponse(message));
+            }
+        }
     }
 }

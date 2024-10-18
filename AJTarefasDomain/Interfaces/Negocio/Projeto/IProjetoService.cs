@@ -1,6 +1,7 @@
 ﻿
 using AJTarefasDomain.Projeto;
 using AJTarefasDomain.Projeto.Post;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace AJTarefasDomain.Interfaces.Negocio.Projeto
@@ -12,5 +13,7 @@ namespace AJTarefasDomain.Interfaces.Negocio.Projeto
         Task PatchProjetoAsync(int ProjetoId);
 
         Task DeleteProjetoAsync(int ProjetoId);
+
+        Task<IEnumerable<ProjetoDto>> RecuperarProjetosAsync();
     }
 }
