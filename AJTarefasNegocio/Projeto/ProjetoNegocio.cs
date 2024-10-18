@@ -56,9 +56,9 @@ namespace AJTarefasNegocio.Projeto
             await _projetoRepositorio.DeleteProjetoAsync(ProjetoId);
         }
 
-        public async Task<IEnumerable<ProjetoDto>> RecuperarProjetosAsync()
+        public async Task<IEnumerable<ProjetoDto>> RecuperarProjetosAsync(int? ProjetoId, int? UsuarioId)
         {
-            return await _projetoRepositorio.RecuperarProjetosAsync();
+            return await _projetoRepositorio.RecuperarProjetosAsync(ProjetoId, UsuarioId);
         }
 
     }

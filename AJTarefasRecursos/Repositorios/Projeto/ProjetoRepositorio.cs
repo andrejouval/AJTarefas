@@ -98,7 +98,7 @@ namespace AJTarefasRecursos.Repositorios.Projeto
 
         public async Task<ProjetoDto> RecuperarProjetoAsync(int ProjetoId)
         {
-            var projetos = await RecuperarProjetosAsync();
+            var projetos = await RecuperarProjetosAsync(ProjetoId, null);
 
             var projeto = projetos.Where(p => p.Id == ProjetoId).FirstOrDefault();
 
@@ -187,7 +187,7 @@ namespace AJTarefasRecursos.Repositorios.Projeto
 
         }
 
-        public async Task<IEnumerable<ProjetoDto>> RecuperarProjetosAsync()
+        public async Task<IEnumerable<ProjetoDto>> RecuperarProjetosAsync(int? ProjetoId, int? UsuarioId)
         {
             var projetos = new List<ProjetoDto>();
 
@@ -195,14 +195,26 @@ namespace AJTarefasRecursos.Repositorios.Projeto
 
             List<TarefaDto> tarefas = null;
 
-            var cmd = new SqlCommand(@"select p.Id, p.NomeProjeto, p.DescricaoProjeto, p.DataCriacao, p.DataInicio, 
+            var query = @"select p.Id, p.NomeProjeto, p.DescricaoProjeto, p.DataCriacao, p.DataInicio, 
                                         p.DataTermino, p.DataPrevisaoTermino, p.StatusProjeto, p.UsuarioId,
                                         u.Nome, u.Papel, t.Id as 'TarefaId'
                                         from Projetos p
                                         inner join Usuarios u
                                         on p.UsuarioId = u.Id 
 		                                left join Tarefas t
-		                                on t.ProjetoId = p.Id", _con);
+		                                on t.ProjetoId = p.Id where 1=1 ";
+
+            if (ProjetoId != null)
+            {
+                query += " and p.Id = " + ProjetoId;
+            }
+
+            if (UsuarioId != null)
+            {
+                query += " and p.UsuarioId = " + UsuarioId;
+            }
+
+            var cmd = new SqlCommand(query, _con);
 
             cmd.CommandType = System.Data.CommandType.Text;
 

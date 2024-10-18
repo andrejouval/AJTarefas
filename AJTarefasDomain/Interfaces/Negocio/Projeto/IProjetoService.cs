@@ -14,6 +14,6 @@ namespace AJTarefasDomain.Interfaces.Negocio.Projeto
 
         Task DeleteProjetoAsync(int ProjetoId);
 
-        Task<IEnumerable<ProjetoDto>> RecuperarProjetosAsync();
+        Task<IEnumerable<ProjetoDto>> RecuperarProjetosAsync(int? ProjetoId, int? UsuarioId);
     }
 }

@@ -91,11 +91,11 @@ namespace AJTarefasApp.Controllers.Projeto
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetProjetoAsync()
+        public async Task<IActionResult> GetProjetoAsync([FromQuery(Name = "projetoId")] int? ProjetoId, [FromQuery(Name = "usuarioId")] int? UsuarioId)
         {
             try
             {
-                var projetos = await _projeto.RecuperarProjetosAsync();
+                var projetos = await _projeto.RecuperarProjetosAsync(ProjetoId, UsuarioId);
 
                 return Ok(BaseResponse<object>.SuccessResponse(projetos));
             }
