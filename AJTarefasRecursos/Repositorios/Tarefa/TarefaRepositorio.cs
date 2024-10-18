@@ -3,6 +3,7 @@ using AJTarefasDomain.Interfaces.Repositorio.Projeto;
 using AJTarefasDomain.Tarefa;
 using Microsoft.Extensions.Configuration;
 using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
@@ -15,6 +16,8 @@ namespace AJTarefasRecursos.Repositorios.Projeto
     public class TarefaRepositorio : ITarefaRepositorio
     {
         private SqlConnection _con = new SqlConnection();
+
+        private SqlTransaction _tr;
         public TarefaRepositorio(IConfiguration configuration)
         {
             _con.ConnectionString = configuration["ConnectionStrings:DefaultConnection"];
@@ -47,7 +50,7 @@ namespace AJTarefasRecursos.Repositorios.Projeto
             cmd.CommandType = System.Data.CommandType.Text;
 
             cmd.Parameters.Add(new SqlParameter("@projetoId", System.Data.SqlDbType.Int)).Value = Tarefa.ProjetoId;
-            cmd.Parameters.Add(new SqlParameter("@titulo", System.Data.SqlDbType.VarChar, 30)).Value = Tarefa.Titulo;
+            cmd.Parameters.Add(new SqlParameter("@titulo", System.Data.SqlDbType.VarChar, 300)).Value = Tarefa.Titulo;
             cmd.Parameters.Add(new SqlParameter("@descricao", System.Data.SqlDbType.VarChar, 8000)).Value = Tarefa.Descricao;
 
             if (Tarefa.PrioridadeTarefa != null)
@@ -91,6 +94,7 @@ namespace AJTarefasRecursos.Repositorios.Projeto
                                         , DataTermino = @dataTermino
                                         , StatusTarefa = @statusTarefa
                                         , Descricao = @descricao
+                                        , UsuarioId = @usuarioId
                                         where ProjetoId = @projetoId
                                         and Id = @Id
                                         ", _con);
@@ -99,9 +103,10 @@ namespace AJTarefasRecursos.Repositorios.Projeto
 
             cmd.Parameters.Add(new SqlParameter("@projetoId", SqlDbType.Int)).Value = Tarefa.ProjetoId;
             cmd.Parameters.Add(new SqlParameter("@Id", SqlDbType.Int)).Value = Tarefa.Id;
-            cmd.Parameters.Add(new SqlParameter("@titulo", SqlDbType.VarChar, 30)).Value = Tarefa.Titulo;
+            cmd.Parameters.Add(new SqlParameter("@titulo", SqlDbType.VarChar, 300)).Value = Tarefa.Titulo;
             cmd.Parameters.Add(new SqlParameter("@descricao", SqlDbType.VarChar, 8000)).Value = Tarefa.Descricao;
             cmd.Parameters.Add(new SqlParameter("@statusTarefa", SqlDbType.Int)).Value = Tarefa.Status.StatusCode;
+            cmd.Parameters.Add(new SqlParameter("@usuarioId", SqlDbType.Int)).Value = Tarefa.Usuario.UsuarioId;
 
             if (Tarefa.DataInicio != null)
             {
@@ -134,17 +139,33 @@ namespace AJTarefasRecursos.Repositorios.Projeto
             {
                 _con.Open();
 
+                _tr = _con.BeginTransaction();
+
+                cmd.Transaction = _tr;
+
+                await IncluiHistoricoAsync(Tarefa);
+
+                foreach (var comentario in Tarefa.Comentarios)
+                {
+                    await IncluiComentarioAsync(Tarefa.ProjetoId, Tarefa.Id, comentario);
+                }
+
                 await cmd.ExecuteNonQueryAsync();
+
+                _tr.Commit();
 
                 _con.Close();
 
             }
             catch (System.Exception)
             {
+                _tr.Rollback();
+
                 if (_con.State != System.Data.ConnectionState.Closed)
                 {
                     _con.Close();
                 }
+                
                 throw;
             }
 
@@ -327,7 +348,7 @@ namespace AJTarefasRecursos.Repositorios.Projeto
 
         }
 
-        public async Task IncluiComentarioAsync(int ProjetoId, int Id, TarefaComentariosDto comentario)
+        private async Task IncluiComentarioAsync(int ProjetoId, int Id, TarefaComentariosDto comentario)
         {
             var cmd = new SqlCommand(@"insert into ComentariosTarefas(
                                         ProjetoId
@@ -351,79 +372,60 @@ namespace AJTarefasRecursos.Repositorios.Projeto
 
             try
             {
-                _con.Open();
+                cmd.Transaction = _tr;
 
                 await cmd.ExecuteNonQueryAsync();
-
-                _con.Close();
 
             }
             catch (System.Exception)
             {
-                if (_con.State != System.Data.ConnectionState.Closed)
-                {
-                    _con.Close();
-                }
                 throw;
             }
 
         }
 
-        public async Task IncluiHistoricoAsync(TarefaDto Tarefa)
+        private async Task IncluiHistoricoAsync(TarefaDto Tarefa)
         {
             var cmd = new SqlCommand(@"insert into HistoricoTarefas
                                         (
                                         TarefaId
                                         , ProjetoId
-                                        , DataHoraCriacao
                                         , UsuarioId
+                                        , DataHoraCriacao
                                         , Titulo
                                         , Descricao
                                         , DataCriacao
+                                        , DataInicio
+                                        , DataPrevistaTermino
+                                        , DataTermino
                                         , PrioridadeTarefa
                                         , StatusTarefa
                                         )
-                                        output inserted.id
-                                        values
-                                        (
-                                        @projetoId,
-                                        @titulo,
-                                        @descricao,
-                                        getdate(),
-                                        @prioridade,
-                                        1
-                                        )", _con);
+                                        select Id
+                                        , ProjetoId
+                                        , UsuarioId
+                                        , getdate() as 'DataHoraCriacao'
+                                        , Titulo
+                                        , Descricao
+                                        , DataCriacao
+                                        , DataInicio
+                                        , DataPrevistaTermino
+                                        , DataTermino
+                                        , PrioridadeTarefa
+                                        , StatusTarefa
+                                        from Tarefas
+                                        where Id = " + Tarefa.Id + " and ProjetoId = " + Tarefa.ProjetoId, _con);
 
             cmd.CommandType = System.Data.CommandType.Text;
 
-            cmd.Parameters.Add(new SqlParameter("@projetoId", System.Data.SqlDbType.Int)).Value = Tarefa.ProjetoId;
-            cmd.Parameters.Add(new SqlParameter("@titulo", System.Data.SqlDbType.VarChar, 30)).Value = Tarefa.Titulo;
-            cmd.Parameters.Add(new SqlParameter("@descricao", System.Data.SqlDbType.VarChar, 8000)).Value = Tarefa.Descricao;
-
-            if (Tarefa.PrioridadeTarefa != null)
-            {
-                cmd.Parameters.Add(new SqlParameter("@prioridade", System.Data.SqlDbType.Int)).Value = Tarefa.PrioridadeTarefa;
-            }
-            else
-            {
-                cmd.Parameters.Add(new SqlParameter("@prioridade", System.Data.SqlDbType.Int)).Value = DBNull.Value;
-            }
+            cmd.Transaction = _tr;
 
             try
             {
-                _con.Open();
-
-                var id = await cmd.ExecuteScalarAsync();
-
-                _con.Close();
-
+                await cmd.ExecuteNonQueryAsync();
             }
             catch (System.Exception)
             {
-                if (_con.State != System.Data.ConnectionState.Closed)
-                {
-                    _con.Close();
-                }
                 throw;
             }
 

@@ -29,6 +29,5 @@ namespace AJTarefasDomain.Tarefa
         public IEnumerable<TarefaComentariosDto> Comentarios { get; set; }
 
         public UsuarioDto Usuario { get; set; }
-
     }
 }

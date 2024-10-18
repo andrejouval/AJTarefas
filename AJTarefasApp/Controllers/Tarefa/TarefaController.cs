@@ -102,7 +102,11 @@ namespace AJTarefasApp.Controllers.Tarefa
                     {
                         IdUsuario = c.IdUsuario,
                         Comentario = c.Comentario
-                    })
+                    }),
+                    Usuario = new UsuarioDto()
+                    {
+                        UsuarioId = Tarefa.UsuarioId
+                    }
                 };
 
                 var retornoTarefa = await _tarefa.PatchTarefaAsync(tarefa);
@@ -127,6 +131,16 @@ namespace AJTarefasApp.Controllers.Tarefa
                     DataInico = retornoTarefa.DataInicio ?? null,
                     DataPrevistaTermino = retornoTarefa.DataPrevistaTermino ?? null,
                     DataTermino = retornoTarefa.DataTermino ?? null,
+                    Usuario = new Projeto.Base.BaseUsuarioResponse()
+                    {
+                        Nome = retornoTarefa.Usuario.Nome,
+                        UsuarioId = retornoTarefa.Usuario.UsuarioId,
+                        UsuariosPapel = new Projeto.Base.BaseUsuarioPapelResponse()
+                        {
+                            UsuariosPapelCode = retornoTarefa.Usuario.Papel.UsuarioPapelCode,
+                            Papel = retornoTarefa.Usuario.Papel.Papel
+                        }
+                    },
                     Comentarios = retornoTarefa.Comentarios.Select(c => new PatchTarefaComentarioResponse()
                     {
                          IdUsuario = c.IdUsuario,

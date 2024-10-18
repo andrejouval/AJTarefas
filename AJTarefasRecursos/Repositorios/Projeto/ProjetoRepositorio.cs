@@ -165,5 +165,33 @@ namespace AJTarefasRecursos.Repositorios.Projeto
 
         }
 
+        public async Task PatchProjetoAsync(int ProjetoId)
+        {
+            var cmd = new SqlCommand(@"sp_AtualizarProjeto", _con);
+
+            cmd.CommandType = System.Data.CommandType.StoredProcedure;
+
+            cmd.Parameters.Add(new SqlParameter("@projetoId", System.Data.SqlDbType.Int)).Value = ProjetoId;
+
+            try
+            {
+                _con.Open();
+
+                await cmd.ExecuteNonQueryAsync();
+
+                _con.Close();
+
+            }
+            catch (System.Exception)
+            {
+                if (_con.State != System.Data.ConnectionState.Closed)
+                {
+                    _con.Close();
+                }
+                throw;
+            }
+
+        }
+
     }
 }

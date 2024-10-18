@@ -1,4 +1,5 @@
 ﻿using AJTarefasDomain.Base;
+using AJTarefasDomain.Interfaces.Negocio.Projeto;
 using AJTarefasDomain.Interfaces.Negocio.Tarefa;
 using AJTarefasDomain.Interfaces.Repositorio.Projeto;
 using AJTarefasDomain.Tarefa;
@@ -11,11 +12,13 @@ namespace AJTarefasNegocio.Projeto
     {
         private readonly ITarefaRepositorio _tarefaRepositorio;
         private readonly IProjetoRepositorio _projetoRepositorio;
+        private readonly IProjetoService _projetoService;
 
-        public TarefaNegocio(ITarefaRepositorio tarefaRepo, IProjetoRepositorio projetoRepo)
+        public TarefaNegocio(ITarefaRepositorio tarefaRepo, IProjetoRepositorio projetoRepo, IProjetoService projetoService)
         {
             _tarefaRepositorio = tarefaRepo;
             _projetoRepositorio = projetoRepo;
+            _projetoService = projetoService;
         }
         public async Task<TarefaDto> PostTarefaAsync(PostTarefaRequest Tarefa)
         {
@@ -111,26 +114,36 @@ namespace AJTarefasNegocio.Projeto
                 {
                     Tarefa.DataInicio = DateTime.Now;
                 }
+                else
+                {
+                    Tarefa.DataInicio = tarefaAtual.DataInicio;
+                }
 
                 if (Tarefa.Status.StatusCode == StatusTarefa.Concluida && tarefaAtual.DataTermino is null)
                 {
                     Tarefa.DataTermino = DateTime.Now;
                 }
+                else
+                {
+                    if (Tarefa.Status.StatusCode == StatusTarefa.Concluida && Tarefa.DataTermino is null)
+                    {
+                        Tarefa.DataTermino = DateTime.Now;
+                    }
+                    else
+                    {
+                        Tarefa.DataPrevistaTermino = tarefaAtual.DataTermino;
+                    }
+                }
 
                 await _tarefaRepositorio.PatchTarefaAsync(Tarefa);
+
+                await _projetoService.PatchProjetoAsync(Tarefa.ProjetoId);
 
             }
             else
             {
                 await _tarefaRepositorio.PatchTarefaAsync(Tarefa);
             }
-
-            foreach(var comentario in Tarefa.Comentarios)
-            {
-                await _tarefaRepositorio.IncluiComentarioAsync(Tarefa.ProjetoId, Tarefa.Id, comentario);
-            }
-
-            await _tarefaRepositorio.IncluiHistoricoAsync(tarefaAtual);
 
             var retorno = await _tarefaRepositorio.RecuperarTarefaAsync(Tarefa.ProjetoId, Tarefa.Id);
 

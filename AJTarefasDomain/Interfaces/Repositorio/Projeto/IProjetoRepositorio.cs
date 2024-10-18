@@ -11,5 +11,7 @@ namespace AJTarefasDomain.Interfaces.Repositorio.Projeto
         Task<bool> ProjetoExisteAsync(int ProjetoId);
 
         Task<ProjetoDto> RecuperarProjetoAsync(int ProjetoId);
+
+        Task PatchProjetoAsync(int ProjetoId);
     }
 }

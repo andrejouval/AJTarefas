@@ -37,5 +37,11 @@ namespace AJTarefasNegocio.Projeto
 
             return projeto;
         }
+
+        public async Task PatchProjetoAsync(int ProjetoId)
+        {
+            await _projetoRepositorio.PatchProjetoAsync(ProjetoId);
+        }
+
     }
 }
