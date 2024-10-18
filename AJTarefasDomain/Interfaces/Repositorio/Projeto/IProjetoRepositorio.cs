@@ -1,5 +1,6 @@
 ﻿using AJTarefasDomain.Projeto;
 using AJTarefasDomain.Projeto.Post;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace AJTarefasDomain.Interfaces.Repositorio.Projeto
@@ -17,5 +18,7 @@ namespace AJTarefasDomain.Interfaces.Repositorio.Projeto
         Task DeleteProjetoAsync(int ProjetoId);
 
         Task<int> RecuperarQuantidadeTarefasAsync(int ProjetoId);
+
+        Task<IEnumerable<ProjetoDto>> RecuperarProjetosAsync();
     }
 }

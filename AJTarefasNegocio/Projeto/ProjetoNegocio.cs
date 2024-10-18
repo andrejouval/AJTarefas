@@ -2,6 +2,7 @@
 using AJTarefasDomain.Interfaces.Repositorio.Projeto;
 using AJTarefasDomain.Projeto;
 using AJTarefasDomain.Projeto.Post;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace AJTarefasNegocio.Projeto
@@ -54,5 +55,11 @@ namespace AJTarefasNegocio.Projeto
 
             await _projetoRepositorio.DeleteProjetoAsync(ProjetoId);
         }
+
+        public async Task<IEnumerable<ProjetoDto>> RecuperarProjetosAsync()
+        {
+            return await _projetoRepositorio.RecuperarProjetosAsync();
+        }
+
     }
 }

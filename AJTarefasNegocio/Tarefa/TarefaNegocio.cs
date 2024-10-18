@@ -207,7 +207,7 @@ namespace AJTarefasNegocio.Projeto
             return erroComum;
         }
 
-        public async Task<TarefaDto> GetTarefaAsync(int ProjetoId, int Id)
+        public async Task<TarefaDto> RecuperarTarefaAsync(int ProjetoId, int Id)
         {
             return await _tarefaRepositorio.RecuperarTarefaAsync(ProjetoId, Id);
         }
