@@ -3,8 +3,6 @@ using AJTarefasDomain.Interfaces.Negocio.Tarefa;
 using AJTarefasDomain.Interfaces.Repositorio.Projeto;
 using AJTarefasDomain.Tarefa;
 using System;
-using System.Runtime.InteropServices;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace AJTarefasNegocio.Projeto
@@ -19,7 +17,7 @@ namespace AJTarefasNegocio.Projeto
             _tarefaRepositorio = tarefaRepo;
             _projetoRepositorio = projetoRepo;
         }
-        public async Task<int> PostTarefaAsync(PostTarefaRequest Tarefa)
+        public async Task<TarefaDto> PostTarefaAsync(PostTarefaRequest Tarefa)
         {
             var tarefa = new TarefaDto()
             {
@@ -30,7 +28,11 @@ namespace AJTarefasNegocio.Projeto
                     PrioridadeCode = (PrioridadeTarefa)Tarefa.PrioridadeTarefa,
                     Prioridade = Tarefa.PrioridadeTarefa.GetEnumTextos()
                 },
-                Titulo = Tarefa.Titulo
+                Titulo = Tarefa.Titulo,
+                Usuario = new UsuarioDto()
+                {
+                    UsuarioId = Tarefa.UsuarioId
+                }
             };
 
             var eValido = await EValido(tarefa);
@@ -45,7 +47,9 @@ namespace AJTarefasNegocio.Projeto
                 throw new System.Exception(eValido.MensagemError);
             }
 
-            return await _tarefaRepositorio.PostTarefaAsync(Tarefa);
+            var id = await _tarefaRepositorio.PostTarefaAsync(Tarefa);
+
+            return await _tarefaRepositorio.RecuperarTarefaAsync(tarefa.ProjetoId, id);
         }
 
         public async Task<TarefaDto> PatchTarefaAsync(TarefaDto Tarefa)
@@ -180,6 +184,12 @@ namespace AJTarefasNegocio.Projeto
                 erroComum.MensagemError = "Número máximo de tarefas foi atingida para esse projeto.";
             }
 
+            if (Tarefa.Usuario == null)
+            {
+                erroComum.EValido = false;
+                erroComum.MensagemError = "Usuário é obrigatório.";
+            }
+            
             return erroComum;
         }
 

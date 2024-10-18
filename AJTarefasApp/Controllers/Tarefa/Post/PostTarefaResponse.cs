@@ -1,4 +1,5 @@
-﻿using AJTarefasDomain.Tarefa;
+﻿using AJTarefasApp.Controllers.Projeto.Base;
+using AJTarefasDomain.Tarefa;
 using System.Text.Json.Serialization;
 
 namespace AJTarefasApp.Controllers.Tarefa.Post
@@ -25,6 +26,9 @@ namespace AJTarefasApp.Controllers.Tarefa.Post
 
         [JsonPropertyName("status")]
         public PostTarefaStatusResponse Status {  get; set; }
+
+        [JsonPropertyName("usuario")]
+        public BaseUsuarioResponse Usuario { get; set; }
 
     }
 

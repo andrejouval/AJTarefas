@@ -16,5 +16,8 @@ namespace AJTarefasApp.Controllers.Tarefa.Post
 
         [JsonPropertyName("prioridadeTarefa")]
         public PrioridadeTarefa PrioridadeTarefa { get; set; }
+
+        [JsonPropertyName("usuarioId")]
+        public int UsuarioId { get; set; }
     }
 }

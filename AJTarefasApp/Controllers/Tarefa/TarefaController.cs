@@ -22,17 +22,18 @@ namespace AJTarefasApp.Controllers.Tarefa
         {
             try
             {
-                var id = await _tarefa.PostTarefaAsync(new AJTarefasDomain.Tarefa.PostTarefaRequest()
+                var tarefa = await _tarefa.PostTarefaAsync(new AJTarefasDomain.Tarefa.PostTarefaRequest()
                 {
                     ProjetoId = Tarefa.ProjetoId,
                     Descricao = Tarefa.Descricao,
                     PrioridadeTarefa = Tarefa.PrioridadeTarefa,
-                    Titulo = Tarefa.Titulo
+                    Titulo = Tarefa.Titulo,
+                    UsuarioId = Tarefa.UsuarioId
                 });
 
                 var retorno = new PostTarefaResponse()
                 {
-                    Id = id,
+                    Id = tarefa.Id,
                     Descricao = Tarefa.Descricao,
                     Titulo = Tarefa.Titulo,
                     PrioridadeTarefa = new PostTarefaPrioridadeResponse()
@@ -46,7 +47,17 @@ namespace AJTarefasApp.Controllers.Tarefa
                         Status = AJTarefasDomain.Tarefa.StatusTarefa.Pendente.GetEnumTextos()
                     },
                     DataCriacao = DateTime.Now,
-                    ProjetoId = Tarefa.ProjetoId
+                    ProjetoId = Tarefa.ProjetoId,
+                    Usuario = new Projeto.Base.BaseUsuarioResponse()
+                    {
+                        Nome = tarefa.Usuario.Nome,
+                        UsuarioId = tarefa.Usuario.UsuarioId,
+                        UsuariosPapel = new Projeto.Base.BaseUsuarioPapelResponse()
+                        {
+                            UsuariosPapelCode = (UsuariosPapel)tarefa.Usuario.Papel.UsuarioPapelCode,
+                            Papel = tarefa.Usuario.Papel.Papel
+                        }
+                    }
                 };
 
                 return Ok(BaseResponse<object>.SuccessResponse(retorno));

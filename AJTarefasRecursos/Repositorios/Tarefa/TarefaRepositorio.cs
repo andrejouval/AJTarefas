@@ -30,6 +30,7 @@ namespace AJTarefasRecursos.Repositorios.Projeto
                                         , DataCriacao
                                         , PrioridadeTarefa
                                         , StatusTarefa
+                                        , UsuarioId
                                         )
                                         output inserted.id
                                         values
@@ -39,7 +40,8 @@ namespace AJTarefasRecursos.Repositorios.Projeto
                                         @descricao,
                                         getdate(),
                                         @prioridade,
-                                        1
+                                        1,
+                                        @usuarioId
                                         )", _con);
 
             cmd.CommandType = System.Data.CommandType.Text;
@@ -56,6 +58,8 @@ namespace AJTarefasRecursos.Repositorios.Projeto
             {
                 cmd.Parameters.Add(new SqlParameter("@prioridade", System.Data.SqlDbType.Int)).Value = DBNull.Value;
             }
+
+            cmd.Parameters.Add(new SqlParameter("@usuarioId", System.Data.SqlDbType.Int)).Value = Tarefa.UsuarioId;
 
             try
             {
@@ -187,9 +191,14 @@ namespace AJTarefasRecursos.Repositorios.Projeto
                                         , t.DataTermino
                                         , t.PrioridadeTarefa
                                         , t.StatusTarefa
-                                        , c.UsuarioId
+                                        , t.UsuarioId as 'UsuarioIdTarefa'
+                                        , c.UsuarioId as 'UsuarioIdComentario'
                                         , c.Comentario
+                                        , u.Nome
+                                        , u.Papel
                                         from Tarefas t
+                                            inner join Usuarios u
+                                            on u.Id = t.UsuarioId
                                             left join ComentariosTarefas c
                                             on c.ProjetoId = t.ProjetoId and c.TarefaId = t.Id
                                         where t.Id = " + Id + " and t.ProjetoId = " + ProjetoId, _con);
@@ -248,15 +257,26 @@ namespace AJTarefasRecursos.Repositorios.Projeto
 
                         tarefa.ProjetoId = ProjetoId;
 
+                        tarefa.Usuario = new UsuarioDto()
+                        {
+                            Nome = reader["Nome"].ToString(),
+                            UsuarioId = Convert.ToInt32(reader["UsuarioIdTarefa"]),
+                            Papel = new UsuarioPapelDto()
+                            {
+                                UsuarioPapelCode = (UsuariosPapel)Convert.ToInt32(reader["Papel"]),
+                                Papel = ((UsuariosPapel)Convert.ToInt32(reader["Papel"])).GetEnumTextos()
+                            }
+                        };
+
                         tarefa.Comentarios = comentarios;
 
                     }
 
-                    if (reader["UsuarioId"] != DBNull.Value)
+                    if (reader["UsuarioIdComentario"] != DBNull.Value)
                     {
                         comentarios.Add(new TarefaComentariosDto()
                         {
-                            IdUsuario = Convert.ToInt32(reader["UsuarioId"]),
+                            IdUsuario = Convert.ToInt32(reader["UsuarioIdComentario"]),
                             Comentario = reader["Comentario"].ToString()
                         });
                     }
