@@ -3,9 +3,11 @@ using AJTarefasDomain.Interfaces.Repositorio.Projeto;
 using AJTarefasDomain.Tarefa;
 using Microsoft.Extensions.Configuration;
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Diagnostics.Contracts;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace AJTarefasRecursos.Repositorios.Projeto
@@ -13,7 +15,7 @@ namespace AJTarefasRecursos.Repositorios.Projeto
     public class TarefaRepositorio : ITarefaRepositorio
     {
         private SqlConnection _con = new SqlConnection();
-        public TarefaRepositorio(IConfiguration configuration) 
+        public TarefaRepositorio(IConfiguration configuration)
         {
             _con.ConnectionString = configuration["ConnectionStrings:DefaultConnection"];
         }
@@ -45,7 +47,7 @@ namespace AJTarefasRecursos.Repositorios.Projeto
             cmd.Parameters.Add(new SqlParameter("@projetoId", System.Data.SqlDbType.Int)).Value = Tarefa.ProjetoId;
             cmd.Parameters.Add(new SqlParameter("@titulo", System.Data.SqlDbType.VarChar, 30)).Value = Tarefa.Titulo;
             cmd.Parameters.Add(new SqlParameter("@descricao", System.Data.SqlDbType.VarChar, 8000)).Value = Tarefa.Descricao;
-            
+
             if (Tarefa.PrioridadeTarefa != null)
             {
                 cmd.Parameters.Add(new SqlParameter("@prioridade", System.Data.SqlDbType.Int)).Value = Tarefa.PrioridadeTarefa;
@@ -173,16 +175,24 @@ namespace AJTarefasRecursos.Repositorios.Projeto
 
         public async Task<TarefaDto> RecuperarTarefaAsync(int ProjetoId, int Id)
         {
-            var cmd = new SqlCommand(@"select Id
-                                        , ProjetoId
-                                        , Titulo
-                                        , Descricao
-                                        , DataCriacao
-                                        , DataInicio
-                                        , DataPrevistaTermino
-                                        , DataTermino
-                                        , PrioridadeTarefa
-                                        , StatusTarefa from Tarefas where Id = " + Id + " and ProjetoId = " + ProjetoId, _con);
+            var comentarios = new List<TarefaComentariosDto>();
+
+            var cmd = new SqlCommand(@"select t.Id
+                                        , t.ProjetoId
+                                        , t.Titulo
+                                        , t.Descricao
+                                        , t.DataCriacao
+                                        , t.DataInicio
+                                        , t.DataPrevistaTermino
+                                        , t.DataTermino
+                                        , t.PrioridadeTarefa
+                                        , t.StatusTarefa
+                                        , c.UsuarioId
+                                        , c.Comentario
+                                        from Tarefas t
+                                            left join ComentariosTarefas c
+                                            on c.ProjetoId = t.ProjetoId and c.TarefaId = t.Id
+                                        where t.Id = " + Id + " and t.ProjetoId = " + ProjetoId, _con);
 
             cmd.CommandType = System.Data.CommandType.Text;
 
@@ -196,47 +206,65 @@ namespace AJTarefasRecursos.Repositorios.Projeto
 
                 while (reader.Read())
                 {
-                    tarefa.PrioridadeTarefa = new TarefaPrioridadeDto()
+                    if (tarefa.Id == 0)
                     {
-                        PrioridadeCode = (PrioridadeTarefa)Convert.ToInt32(reader["PrioridadeTarefa"]),
-                        Prioridade = ((PrioridadeTarefa)Convert.ToInt32(reader["PrioridadeTarefa"])).GetEnumTextos()
-                    };
+                        tarefa.PrioridadeTarefa = new TarefaPrioridadeDto()
+                        {
+                            PrioridadeCode = (PrioridadeTarefa)Convert.ToInt32(reader["PrioridadeTarefa"]),
+                            Prioridade = ((PrioridadeTarefa)Convert.ToInt32(reader["PrioridadeTarefa"])).GetEnumTextos()
+                        };
 
-                    if (reader["DataTermino"] != DBNull.Value)
-                    {
-                        tarefa.DataTermino = Convert.ToDateTime(reader["DataTermino"]);
+                        if (reader["DataTermino"] != DBNull.Value)
+                        {
+                            tarefa.DataTermino = Convert.ToDateTime(reader["DataTermino"]);
+                        }
+
+                        tarefa.Status = new TarefaStatusDto()
+                        {
+                            StatusCode = (StatusTarefa)Convert.ToInt32(reader["StatusTarefa"]),
+                            Status = ((StatusTarefa)Convert.ToInt32(reader["StatusTarefa"])).GetEnumTextos()
+                        };
+
+                        if (reader["DataPrevistaTermino"] != DBNull.Value)
+                        {
+                            tarefa.DataPrevistaTermino = Convert.ToDateTime(reader["DataPrevistaTermino"]);
+                        };
+
+                        if (reader["DataCriacao"] != DBNull.Value)
+                        {
+                            tarefa.DataCriacao = Convert.ToDateTime(reader["DataCriacao"]);
+                        };
+
+                        if (reader["DataInicio"] != DBNull.Value)
+                        {
+                            tarefa.DataInicio = Convert.ToDateTime(reader["DataInicio"]);
+                        };
+
+                        tarefa.Descricao = reader["Descricao"].ToString();
+
+                        tarefa.Titulo = reader["Titulo"].ToString();
+
+                        tarefa.Id = Id;
+
+                        tarefa.ProjetoId = ProjetoId;
+
+                        tarefa.Comentarios = comentarios;
+
                     }
 
-                    tarefa.Status = new TarefaStatusDto()
+                    if (reader["UsuarioId"] != DBNull.Value)
                     {
-                        StatusCode = (StatusTarefa)Convert.ToInt32(reader["StatusTarefa"]),
-                        Status = ((StatusTarefa)Convert.ToInt32(reader["StatusTarefa"])).GetEnumTextos()
-                    };
-
-                    if (reader["DataPrevistaTermino"] != DBNull.Value)
-                    {
-                        tarefa.DataPrevistaTermino = Convert.ToDateTime(reader["DataPrevistaTermino"]);
-                    };
-
-                    if (reader["DataCriacao"] != DBNull.Value)
-                    {
-                        tarefa.DataCriacao = Convert.ToDateTime(reader["DataCriacao"]);
-                    };
-
-                    if (reader["DataInicio"] != DBNull.Value)
-                    {
-                        tarefa.DataInicio = Convert.ToDateTime(reader["DataInicio"]);
-                    };
-
-                    tarefa.Descricao = reader["Descricao"].ToString();
-
-                    tarefa.Titulo = reader["Titulo"].ToString();
-
-                    tarefa.Id = Id;
-
-                    tarefa.ProjetoId = ProjetoId;
+                        comentarios.Add(new TarefaComentariosDto()
+                        {
+                            IdUsuario = Convert.ToInt32(reader["UsuarioId"]),
+                            Comentario = reader["Comentario"].ToString()
+                        });
+                    }
 
                 }
+
+                tarefa.Comentarios = comentarios;
+
                 _con.Close();
 
                 return tarefa;
@@ -267,6 +295,48 @@ namespace AJTarefasRecursos.Repositorios.Projeto
                 _con.Close();
 
                 return Convert.ToInt32(prioridade);
+            }
+            catch (System.Exception)
+            {
+                if (_con.State != System.Data.ConnectionState.Closed)
+                {
+                    _con.Close();
+                }
+                throw;
+            }
+
+        }
+
+        public async Task IncluiComentarioAsync(int ProjetoId, int Id, TarefaComentariosDto comentario)
+        {
+            var cmd = new SqlCommand(@"insert into ComentariosTarefas(
+                                        ProjetoId
+                                        , TarefaId
+                                        , DataHoraCriacao
+                                        , UsuarioId
+                                        , Comentario) 
+                                        values 
+                                        (@projetoId
+                                         , @tarefaId
+                                         , getdate()
+                                         , @usuarioId
+                                         , @comentario)", _con);
+
+            cmd.CommandType = System.Data.CommandType.Text;
+
+            cmd.Parameters.Add(new SqlParameter("@projetoId", SqlDbType.Int)).Value = ProjetoId;
+            cmd.Parameters.Add(new SqlParameter("@tarefaId", SqlDbType.Int)).Value = Id;
+            cmd.Parameters.Add(new SqlParameter("@usuarioId", SqlDbType.Int)).Value = comentario.IdUsuario;
+            cmd.Parameters.Add(new SqlParameter("@comentario", SqlDbType.VarChar, 8000)).Value = comentario.Comentario;
+
+            try
+            {
+                _con.Open();
+
+                await cmd.ExecuteNonQueryAsync();
+
+                _con.Close();
+
             }
             catch (System.Exception)
             {

@@ -25,5 +25,8 @@ namespace AJTarefasApp.Controllers.Tarefa.Patch
 
         [JsonPropertyName("dataPrevistaTermino")]
         public DateTime DataPrevistaTermino { get; set; }
+
+        [JsonPropertyName("comentarios")]
+        public IEnumerable<PatchTarefaComentarioResponse> Comentarios { get; set; }
     }
 }

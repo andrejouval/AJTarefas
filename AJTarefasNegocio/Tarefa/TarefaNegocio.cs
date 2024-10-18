@@ -120,6 +120,11 @@ namespace AJTarefasNegocio.Projeto
                 await _tarefaRepositorio.PatchTarefaAsync(Tarefa);
             }
 
+            foreach(var comentario in Tarefa.Comentarios)
+            {
+                await _tarefaRepositorio.IncluiComentarioAsync(Tarefa.ProjetoId, Tarefa.Id, comentario);
+            }
+
             var retorno = await _tarefaRepositorio.RecuperarTarefaAsync(Tarefa.ProjetoId, Tarefa.Id);
 
             return retorno;

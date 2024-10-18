@@ -35,6 +35,8 @@ namespace AJTarefasApp.Controllers.Tarefa.Patch
         [JsonPropertyName("dataTermino")]
         public DateTime? DataTermino { get; set; }
 
+        public IEnumerable<PatchTarefaComentarioResponse> Comentarios { get; set; }
+
     }
 
 }

@@ -37,7 +37,7 @@ namespace AJTarefasApp.Controllers.Tarefa
                     Titulo = Tarefa.Titulo,
                     PrioridadeTarefa = new PostTarefaPrioridadeResponse()
                     {
-                        PrioridadeCode = Tarefa.PrioridadeTarefa,
+                        PrioridadeCode = (AJTarefasDomain.Tarefa.PrioridadeTarefa)Tarefa.PrioridadeTarefa,
                         Prioridade = Tarefa.PrioridadeTarefa.GetEnumTextos()
                     },
                     Status = new PostTarefaStatusResponse()
@@ -86,7 +86,12 @@ namespace AJTarefasApp.Controllers.Tarefa
                     {
                         StatusCode = Tarefa.StatusTarefa,
                         Status = Tarefa.StatusTarefa.GetEnumTextos()
-                    }
+                    },
+                    Comentarios = Tarefa.Comentarios.Select(c => new AJTarefasDomain.Tarefa.TarefaComentariosDto()
+                    {
+                        IdUsuario = c.IdUsuario,
+                        Comentario = c.Comentario
+                    })
                 };
 
                 var retornoTarefa = await _tarefa.PatchTarefaAsync(tarefa);
@@ -110,7 +115,12 @@ namespace AJTarefasApp.Controllers.Tarefa
                     ProjetoId = retornoTarefa.ProjetoId,
                     DataInico = retornoTarefa.DataInicio ?? null,
                     DataPrevistaTermino = retornoTarefa.DataPrevistaTermino ?? null,
-                    DataTermino = retornoTarefa.DataTermino ?? null
+                    DataTermino = retornoTarefa.DataTermino ?? null,
+                    Comentarios = retornoTarefa.Comentarios.Select(c => new PatchTarefaComentarioResponse()
+                    {
+                         IdUsuario = c.IdUsuario,
+                         Comentario = c.Comentario
+                    })
                 };
 
                 return Ok(BaseResponse<object>.SuccessResponse(retorno));
