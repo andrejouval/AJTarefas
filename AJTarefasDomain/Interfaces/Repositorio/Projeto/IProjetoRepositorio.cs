@@ -19,6 +19,6 @@ namespace AJTarefasDomain.Interfaces.Repositorio.Projeto
 
         Task<int> RecuperarQuantidadeTarefasAsync(int ProjetoId);
 
-        Task<IEnumerable<ProjetoDto>> RecuperarProjetosAsync();
+        Task<IEnumerable<ProjetoDto>> RecuperarProjetosAsync(int? ProjetoId, int? UsuarioId);
     }
 }

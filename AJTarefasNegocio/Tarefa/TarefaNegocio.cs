@@ -70,6 +70,11 @@ namespace AJTarefasNegocio.Projeto
                 Tarefa.Descricao = tarefaAtual.Descricao;
             }
 
+            if (Tarefa.PrioridadeTarefa.PrioridadeCode == 0)
+            {
+                Tarefa.PrioridadeTarefa = tarefaAtual.PrioridadeTarefa;
+            }
+
             var eValido = await EValido(Tarefa);
 
             if (eValido == null)
@@ -120,20 +125,14 @@ namespace AJTarefasNegocio.Projeto
                     Tarefa.DataInicio = tarefaAtual.DataInicio;
                 }
 
-                if (Tarefa.Status.StatusCode == StatusTarefa.Concluida && tarefaAtual.DataTermino is null)
+                if (Tarefa.Status.StatusCode == StatusTarefa.Concluida && tarefaAtual.DataTermino == null)
                 {
                     Tarefa.DataTermino = DateTime.Now;
                 }
-                else
+
+                if (Tarefa.Status.StatusCode == StatusTarefa.Concluida && tarefaAtual.DataPrevistaTermino == null)
                 {
-                    if (Tarefa.Status.StatusCode == StatusTarefa.Concluida && Tarefa.DataTermino is null)
-                    {
-                        Tarefa.DataTermino = DateTime.Now;
-                    }
-                    else
-                    {
-                        Tarefa.DataPrevistaTermino = tarefaAtual.DataTermino;
-                    }
+                    Tarefa.DataPrevistaTermino = DateTime.Now;
                 }
 
                 await _tarefaRepositorio.PatchTarefaAsync(Tarefa);
