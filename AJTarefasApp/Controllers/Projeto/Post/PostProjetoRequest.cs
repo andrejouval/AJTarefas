@@ -6,8 +6,12 @@ namespace AJTarefasApp.Controllers.Projeto.Post
     {
         [JsonPropertyName("nomeProjeto")]
         public string NomeProjeto { get; set; }
-        [JsonPropertyName("DescricaoProjeto")]
+
+        [JsonPropertyName("descricaoProjeto")]
         public string DescricaoProjeto { get; set; }
+
+        [JsonPropertyName("usuarioId")]
+        public int UsuarioId { get; set; }
         
     }
 }

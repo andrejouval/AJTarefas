@@ -1,4 +1,6 @@
-﻿using AJTarefasDomain.Tarefa;
+﻿using AJTarefasApp.Controllers.Projeto.Base;
+using AJTarefasDomain.Base;
+using AJTarefasDomain.Tarefa;
 using System.Text.Json.Serialization;
 
 namespace AJTarefasApp.Controllers.Tarefa.Patch
@@ -34,6 +36,12 @@ namespace AJTarefasApp.Controllers.Tarefa.Patch
 
         [JsonPropertyName("dataTermino")]
         public DateTime? DataTermino { get; set; }
+
+        [JsonPropertyName("usuario")]
+        public BaseUsuarioResponse Usuario { get; set; }
+
+        [JsonPropertyName("comentarios")]
+        public IEnumerable<PatchTarefaComentarioResponse> Comentarios { get; set; }
 
     }
 

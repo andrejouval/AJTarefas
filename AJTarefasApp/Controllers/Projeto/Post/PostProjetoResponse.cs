@@ -1,4 +1,5 @@
-﻿using AJTarefasDomain.Projeto;
+﻿using AJTarefasApp.Controllers.Projeto.Base;
+using AJTarefasDomain.Projeto;
 using System.Text.Json.Serialization;
 
 namespace AJTarefasApp.Controllers.Projeto.Post
@@ -19,6 +20,10 @@ namespace AJTarefasApp.Controllers.Projeto.Post
 
         [JsonPropertyName("statusProjeto")]
         public PostProjetoStatusResponse StatusProjeto { get; set; }
+
+        [JsonPropertyName("usuarioId")]
+        public BaseUsuarioResponse Usuario { get; set; }
+
 
     }
 }

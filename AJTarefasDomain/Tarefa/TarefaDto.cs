@@ -1,4 +1,6 @@
-﻿using System;
+﻿using AJTarefasDomain.Base;
+using System;
+using System.Collections.Generic;
 
 namespace AJTarefasDomain.Tarefa
 {
@@ -24,5 +26,8 @@ namespace AJTarefasDomain.Tarefa
 
         public DateTime? DataTermino  { get; set; }
 
+        public IEnumerable<TarefaComentariosDto> Comentarios { get; set; }
+
+        public UsuarioDto Usuario { get; set; }
     }
 }

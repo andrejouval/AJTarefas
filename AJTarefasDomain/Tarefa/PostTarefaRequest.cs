@@ -10,5 +10,7 @@
 
         public PrioridadeTarefa? PrioridadeTarefa { get; set; }
 
+        public int UsuarioId { get; set; }
+
     }
 }

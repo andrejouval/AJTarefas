@@ -1,5 +1,6 @@
 ﻿using AJTarefasDomain.Interfaces.Negocio.Projeto;
 using AJTarefasDomain.Interfaces.Repositorio.Projeto;
+using AJTarefasDomain.Projeto;
 using AJTarefasDomain.Projeto.Post;
 using System.Threading.Tasks;
 
@@ -13,7 +14,7 @@ namespace AJTarefasNegocio.Projeto
         {
             _projetoRepositorio = projetoRepo;
         }
-        public async Task<int> PostProjetoAsync(PostProjetoRequest Projeto)
+        public async Task<ProjetoDto> PostProjetoAsync(PostProjetoRequest Projeto)
         {
             if (string.IsNullOrWhiteSpace(Projeto.NomeProjeto))
             {
@@ -25,7 +26,22 @@ namespace AJTarefasNegocio.Projeto
                 throw new System.Exception("A descrição do projeto é obrigarório");
             }
 
-            return await _projetoRepositorio.PostProjetoAsync(Projeto);
+            if (Projeto.UsuarioId == 0)
+            {
+                throw new System.Exception("Usuário é obrigatório");
+            }
+
+            var id = await _projetoRepositorio.PostProjetoAsync(Projeto);
+
+            var projeto = await _projetoRepositorio.RecuperarProjetoAsync(id);
+
+            return projeto;
         }
+
+        public async Task PatchProjetoAsync(int ProjetoId)
+        {
+            await _projetoRepositorio.PatchProjetoAsync(ProjetoId);
+        }
+
     }
 }

@@ -22,22 +22,23 @@ namespace AJTarefasApp.Controllers.Tarefa
         {
             try
             {
-                var id = await _tarefa.PostTarefaAsync(new AJTarefasDomain.Tarefa.PostTarefaRequest()
+                var tarefa = await _tarefa.PostTarefaAsync(new AJTarefasDomain.Tarefa.PostTarefaRequest()
                 {
                     ProjetoId = Tarefa.ProjetoId,
                     Descricao = Tarefa.Descricao,
                     PrioridadeTarefa = Tarefa.PrioridadeTarefa,
-                    Titulo = Tarefa.Titulo
+                    Titulo = Tarefa.Titulo,
+                    UsuarioId = Tarefa.UsuarioId
                 });
 
                 var retorno = new PostTarefaResponse()
                 {
-                    Id = id,
+                    Id = tarefa.Id,
                     Descricao = Tarefa.Descricao,
                     Titulo = Tarefa.Titulo,
                     PrioridadeTarefa = new PostTarefaPrioridadeResponse()
                     {
-                        PrioridadeCode = Tarefa.PrioridadeTarefa,
+                        PrioridadeCode = (AJTarefasDomain.Tarefa.PrioridadeTarefa)Tarefa.PrioridadeTarefa,
                         Prioridade = Tarefa.PrioridadeTarefa.GetEnumTextos()
                     },
                     Status = new PostTarefaStatusResponse()
@@ -46,7 +47,17 @@ namespace AJTarefasApp.Controllers.Tarefa
                         Status = AJTarefasDomain.Tarefa.StatusTarefa.Pendente.GetEnumTextos()
                     },
                     DataCriacao = DateTime.Now,
-                    ProjetoId = Tarefa.ProjetoId
+                    ProjetoId = Tarefa.ProjetoId,
+                    Usuario = new Projeto.Base.BaseUsuarioResponse()
+                    {
+                        Nome = tarefa.Usuario.Nome,
+                        UsuarioId = tarefa.Usuario.UsuarioId,
+                        UsuariosPapel = new Projeto.Base.BaseUsuarioPapelResponse()
+                        {
+                            UsuariosPapelCode = (UsuariosPapel)tarefa.Usuario.Papel.UsuarioPapelCode,
+                            Papel = tarefa.Usuario.Papel.Papel
+                        }
+                    }
                 };
 
                 return Ok(BaseResponse<object>.SuccessResponse(retorno));
@@ -86,6 +97,15 @@ namespace AJTarefasApp.Controllers.Tarefa
                     {
                         StatusCode = Tarefa.StatusTarefa,
                         Status = Tarefa.StatusTarefa.GetEnumTextos()
+                    },
+                    Comentarios = Tarefa.Comentarios.Select(c => new AJTarefasDomain.Tarefa.TarefaComentariosDto()
+                    {
+                        IdUsuario = c.IdUsuario,
+                        Comentario = c.Comentario
+                    }),
+                    Usuario = new UsuarioDto()
+                    {
+                        UsuarioId = Tarefa.UsuarioId
                     }
                 };
 
@@ -110,7 +130,22 @@ namespace AJTarefasApp.Controllers.Tarefa
                     ProjetoId = retornoTarefa.ProjetoId,
                     DataInico = retornoTarefa.DataInicio ?? null,
                     DataPrevistaTermino = retornoTarefa.DataPrevistaTermino ?? null,
-                    DataTermino = retornoTarefa.DataTermino ?? null
+                    DataTermino = retornoTarefa.DataTermino ?? null,
+                    Usuario = new Projeto.Base.BaseUsuarioResponse()
+                    {
+                        Nome = retornoTarefa.Usuario.Nome,
+                        UsuarioId = retornoTarefa.Usuario.UsuarioId,
+                        UsuariosPapel = new Projeto.Base.BaseUsuarioPapelResponse()
+                        {
+                            UsuariosPapelCode = retornoTarefa.Usuario.Papel.UsuarioPapelCode,
+                            Papel = retornoTarefa.Usuario.Papel.Papel
+                        }
+                    },
+                    Comentarios = retornoTarefa.Comentarios.Select(c => new PatchTarefaComentarioResponse()
+                    {
+                         IdUsuario = c.IdUsuario,
+                         Comentario = c.Comentario
+                    })
                 };
 
                 return Ok(BaseResponse<object>.SuccessResponse(retorno));

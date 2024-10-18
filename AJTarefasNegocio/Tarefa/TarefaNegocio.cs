@@ -1,9 +1,9 @@
 ﻿using AJTarefasDomain.Base;
+using AJTarefasDomain.Interfaces.Negocio.Projeto;
 using AJTarefasDomain.Interfaces.Negocio.Tarefa;
 using AJTarefasDomain.Interfaces.Repositorio.Projeto;
 using AJTarefasDomain.Tarefa;
 using System;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace AJTarefasNegocio.Projeto
@@ -12,13 +12,15 @@ namespace AJTarefasNegocio.Projeto
     {
         private readonly ITarefaRepositorio _tarefaRepositorio;
         private readonly IProjetoRepositorio _projetoRepositorio;
+        private readonly IProjetoService _projetoService;
 
-        public TarefaNegocio(ITarefaRepositorio tarefaRepo, IProjetoRepositorio projetoRepo)
+        public TarefaNegocio(ITarefaRepositorio tarefaRepo, IProjetoRepositorio projetoRepo, IProjetoService projetoService)
         {
             _tarefaRepositorio = tarefaRepo;
             _projetoRepositorio = projetoRepo;
+            _projetoService = projetoService;
         }
-        public async Task<int> PostTarefaAsync(PostTarefaRequest Tarefa)
+        public async Task<TarefaDto> PostTarefaAsync(PostTarefaRequest Tarefa)
         {
             var tarefa = new TarefaDto()
             {
@@ -29,7 +31,11 @@ namespace AJTarefasNegocio.Projeto
                     PrioridadeCode = (PrioridadeTarefa)Tarefa.PrioridadeTarefa,
                     Prioridade = Tarefa.PrioridadeTarefa.GetEnumTextos()
                 },
-                Titulo = Tarefa.Titulo
+                Titulo = Tarefa.Titulo,
+                Usuario = new UsuarioDto()
+                {
+                    UsuarioId = Tarefa.UsuarioId
+                }
             };
 
             var eValido = await EValido(tarefa);
@@ -44,7 +50,9 @@ namespace AJTarefasNegocio.Projeto
                 throw new System.Exception(eValido.MensagemError);
             }
 
-            return await _tarefaRepositorio.PostTarefaAsync(Tarefa);
+            var id = await _tarefaRepositorio.PostTarefaAsync(Tarefa);
+
+            return await _tarefaRepositorio.RecuperarTarefaAsync(tarefa.ProjetoId, id);
         }
 
         public async Task<TarefaDto> PatchTarefaAsync(TarefaDto Tarefa)
@@ -106,13 +114,30 @@ namespace AJTarefasNegocio.Projeto
                 {
                     Tarefa.DataInicio = DateTime.Now;
                 }
+                else
+                {
+                    Tarefa.DataInicio = tarefaAtual.DataInicio;
+                }
 
                 if (Tarefa.Status.StatusCode == StatusTarefa.Concluida && tarefaAtual.DataTermino is null)
                 {
                     Tarefa.DataTermino = DateTime.Now;
                 }
+                else
+                {
+                    if (Tarefa.Status.StatusCode == StatusTarefa.Concluida && Tarefa.DataTermino is null)
+                    {
+                        Tarefa.DataTermino = DateTime.Now;
+                    }
+                    else
+                    {
+                        Tarefa.DataPrevistaTermino = tarefaAtual.DataTermino;
+                    }
+                }
 
                 await _tarefaRepositorio.PatchTarefaAsync(Tarefa);
+
+                await _projetoService.PatchProjetoAsync(Tarefa.ProjetoId);
 
             }
             else
@@ -172,6 +197,12 @@ namespace AJTarefasNegocio.Projeto
                 erroComum.MensagemError = "Número máximo de tarefas foi atingida para esse projeto.";
             }
 
+            if (Tarefa.Usuario == null)
+            {
+                erroComum.EValido = false;
+                erroComum.MensagemError = "Usuário é obrigatório.";
+            }
+            
             return erroComum;
         }
 

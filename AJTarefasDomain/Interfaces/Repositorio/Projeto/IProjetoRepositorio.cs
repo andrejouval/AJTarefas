@@ -1,4 +1,5 @@
-﻿using AJTarefasDomain.Projeto.Post;
+﻿using AJTarefasDomain.Projeto;
+using AJTarefasDomain.Projeto.Post;
 using System.Threading.Tasks;
 
 namespace AJTarefasDomain.Interfaces.Repositorio.Projeto
@@ -8,5 +9,9 @@ namespace AJTarefasDomain.Interfaces.Repositorio.Projeto
         Task<int> PostProjetoAsync(PostProjetoRequest Projeto);
 
         Task<bool> ProjetoExisteAsync(int ProjetoId);
+
+        Task<ProjetoDto> RecuperarProjetoAsync(int ProjetoId);
+
+        Task PatchProjetoAsync(int ProjetoId);
     }
 }
