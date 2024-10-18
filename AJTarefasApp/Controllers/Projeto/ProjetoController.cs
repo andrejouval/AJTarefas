@@ -21,15 +21,16 @@ namespace AJTarefasApp.Controllers.Projeto
         {
             try
             {
-                var id = await _projeto.PostProjetoAsync(new AJTarefasDomain.Projeto.Post.PostProjetoRequest()
+                var projeto = await _projeto.PostProjetoAsync(new AJTarefasDomain.Projeto.Post.PostProjetoRequest()
                 {
                     NomeProjeto = Projeto.NomeProjeto,
-                    DescricaoProjeto = Projeto.DescricaoProjeto
+                    DescricaoProjeto = Projeto.DescricaoProjeto,
+                    UsuarioId = Projeto.UsuarioId
                 });
 
                 var retorno = new PostProjetoResponse()
                 {
-                    Id = id,
+                    Id = projeto.Id,
                     NomeProjeto = Projeto.NomeProjeto,
                     DescricaoProjeto = Projeto.DescricaoProjeto,
                     DataCriacao = DateTime.Now,
@@ -37,6 +38,16 @@ namespace AJTarefasApp.Controllers.Projeto
                     {
                         StatusCode = AJTarefasDomain.Projeto.StatusProjeto.Pendente,
                         Status = AJTarefasDomain.Projeto.StatusProjeto.Pendente.GetEnumTextos()
+                    },
+                    Usuario = new Base.BaseUsuarioResponse()
+                    {
+                        Nome = projeto.Usuario.Nome,
+                        UsuarioId = projeto.Usuario.UsuarioId,
+                        UsuariosPapel = new Base.BaseUsuarioPapelResponse()
+                        {
+                            UsuariosPapelCode = projeto.Usuario.Papel.UsuarioPapelCode,
+                            Papel = projeto.Usuario.Papel.Papel
+                        }
                     }
                 };
 

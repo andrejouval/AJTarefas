@@ -16,5 +16,7 @@ namespace AJTarefasDomain.Interfaces.Repositorio.Projeto
         Task<int> RecuperarQuantidadeTarefasAsync(int ProjetoId, int Id);
 
         Task IncluiComentarioAsync(int ProjetoId, int Id, TarefaComentariosDto Comentario);
+
+        Task IncluiHistoricoAsync(TarefaDto Tarefa);
     }
 }

@@ -3,6 +3,7 @@ using AJTarefasDomain.Interfaces.Negocio.Tarefa;
 using AJTarefasDomain.Interfaces.Repositorio.Projeto;
 using AJTarefasDomain.Tarefa;
 using System;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -124,6 +125,8 @@ namespace AJTarefasNegocio.Projeto
             {
                 await _tarefaRepositorio.IncluiComentarioAsync(Tarefa.ProjetoId, Tarefa.Id, comentario);
             }
+
+            await _tarefaRepositorio.IncluiHistoricoAsync(tarefaAtual);
 
             var retorno = await _tarefaRepositorio.RecuperarTarefaAsync(Tarefa.ProjetoId, Tarefa.Id);
 

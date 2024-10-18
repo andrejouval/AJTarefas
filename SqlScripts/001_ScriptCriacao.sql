@@ -16,46 +16,6 @@ go
 if exists (select 1 from sys.sysobjects where name = 'Usuarios') drop table Usuarios
 go
 
-create table Projetos
-(
-Id int identity,
-NomeProjeto varchar(300) not null,
-DescricaoProjeto varchar(max) not null,
-DataCriacao datetime not null,
-DataInicio datetime null,
-DataTermino datetime null,
-DataPrevisaoTermino datetime null,
-StatusProjeto int not null
-)
-go
-
-alter table Projetos
-add constraint pk_projeto primary key (Id)
-go
-
-create table Tarefas
-(
-Id int identity,
-ProjetoId int not null,
-Titulo varchar(30) not null,
-Descricao varchar(max) not null,
-DataCriacao datetime not null,
-DataInicio datetime null,
-DataPrevistaTermino datetime null,
-DataTermino datetime null,
-PrioridadeTarefa int null,
-StatusTarefa int not null
-)
-go
-
-alter table Tarefas
-add constraint pk_tarefa primary key (Id, ProjetoId)
-go
-
-alter table Tarefas
-add constraint fk_tarefa_projeto foreign key (ProjetoId) references Projetos(Id)
-go
-
 create table Usuarios
 (
 Id int identity,
@@ -67,6 +27,58 @@ go
 alter table Usuarios
 add constraint pk_usuario primary key (Id)
 go
+
+create table Projetos
+(
+Id int identity,
+NomeProjeto varchar(300) not null,
+DescricaoProjeto varchar(max) not null,
+DataCriacao datetime not null,
+DataInicio datetime null,
+DataTermino datetime null,
+DataPrevisaoTermino datetime null,
+StatusProjeto int not null,
+UsuarioId int not null
+)
+go
+
+alter table Projetos
+add constraint pk_projeto primary key (Id)
+go
+
+alter table Projetos
+add constraint fk_projetos_usuario foreign key (UsuarioId) references Usuarios(Id)
+go
+
+
+create table Tarefas
+(
+Id int identity,
+ProjetoId int not null,
+Titulo varchar(300) not null,
+Descricao varchar(max) not null,
+DataCriacao datetime not null,
+DataInicio datetime null,
+DataPrevistaTermino datetime null,
+DataTermino datetime null,
+PrioridadeTarefa int null,
+StatusTarefa int not null,
+UsuarioId int not null
+)
+go
+
+alter table Tarefas
+add constraint pk_tarefa primary key (Id, ProjetoId)
+go
+
+alter table Tarefas
+add constraint fk_tarefa_projeto foreign key (ProjetoId) references Projetos(Id)
+go
+
+alter table Tarefas
+add constraint fk_tarefa_usuario foreign key (UsuarioId) references Usuarios(Id)
+go
+
 
 create table ComentariosTarefas
 (
@@ -98,11 +110,14 @@ ProjetoId int not null,
 DataHoraCriacao datetime not null,
 Sequencia int identity,
 UsuarioId int not null,
+Titulo varchar(300) not null,
 Descricao varchar(max) not null,
+DataCriacao datetime not null,
 DataInicio datetime null,
 DataPrevistaTermino datetime null,
 DataTermino datetime null,
-StatusTarefa int not null
+PrioridadeTarefa int null,
+StatusTarefa int not null,
 )
 go
 
@@ -118,5 +133,9 @@ alter table HistoricoTarefas
 add constraint historico_tarefa_usuario foreign key (UsuarioId) references Usuarios(Id)
 go
 
+begin tran
+insert into Usuarios(Nome, Papel) values ('Elton Musk', 1) 
+insert into Usuarios(Nome, Papel) values ('José Ruela', 2)
+commit
 
 
