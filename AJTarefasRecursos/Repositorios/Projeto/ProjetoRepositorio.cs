@@ -187,7 +187,7 @@ namespace AJTarefasRecursos.Repositorios.Projeto
 
         }
 
-        public async Task<IEnumerable<ProjetoDto>> RecuperarProjetosAsync(int? ProjetoId, int? UsuarioId)
+        public async Task<IEnumerable<ProjetoDto>> RecuperarProjetosAsync(int? ProjetoId = null, int? UsuarioId = null)
         {
             var projetos = new List<ProjetoDto>();
 
