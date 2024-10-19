@@ -16,12 +16,12 @@ namespace AJTarefasApp.Controllers.Relatorio
             _relatorio = relatorio;
         }
 
-        [HttpGet("Json/TarefasMediasConcluidasPorMesPorUsuario")]
-        public async Task<IActionResult> RelatorioMediaConclusaoMes()
+        [HttpGet("Json/TarefasMediasConcluidasPorMesPorUsuario/{UsuarioId}")]
+        public async Task<IActionResult> RelatorioMediaConclusaoMes([FromRoute(Name = "UsuarioId")] int UsuarioId)
         {
             try
             {
-                var dados = await _relatorio.RelatorioMediasTarefasConcluidasUsuarioMesAsync();
+                var dados = await _relatorio.RelatorioMediasTarefasConcluidasUsuarioMesAsync(UsuarioId);
 
                 return Ok(BaseResponse<object>.SuccessResponse(dados));
 
@@ -39,12 +39,12 @@ namespace AJTarefasApp.Controllers.Relatorio
             }
         }
 
-        [HttpGet("Json/TarefasConcluidasPorMesPorUsuario")]
-        public async Task<IActionResult> RelatorioConclusaoMesPorUsuario()
+        [HttpGet("Json/TarefasConcluidasPorMesPorUsuario/{UsuarioId}")]
+        public async Task<IActionResult> RelatorioConclusaoMesPorUsuario([FromRoute(Name = "UsuarioId")] int UsuarioId)
         {
             try
             {
-                var dados = await _relatorio.RelatorioTarefasConcluidasUsuarioMesAsync();
+                var dados = await _relatorio.RelatorioTarefasConcluidasUsuarioMesAsync(UsuarioId);
 
                 return Ok(BaseResponse<object>.SuccessResponse(dados));
 
@@ -62,12 +62,12 @@ namespace AJTarefasApp.Controllers.Relatorio
             }
         }
 
-        [HttpGet("Excel/TarefasMediasConcluidasPorMesPorUsuario")]
-        public async Task<IActionResult> ExcelelatorioMediaConclusaoMes()
+        [HttpGet("Excel/TarefasMediasConcluidasPorMesPorUsuario/{UsuarioId}")]
+        public async Task<IActionResult> ExcelelatorioMediaConclusaoMes([FromRoute(Name = "UsuarioId")] int UsuarioId)
         {
             try
             {
-                var dados = await _relatorio.ExcelRelatorioMediasTarefasConcluidasUsuarioMesAsync();
+                var dados = await _relatorio.ExcelRelatorioMediasTarefasConcluidasUsuarioMesAsync(UsuarioId);
 
                 return File(dados, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "RelatorioTarefasConcluidas.xlsx");
 
@@ -85,12 +85,12 @@ namespace AJTarefasApp.Controllers.Relatorio
             }
         }
 
-        [HttpGet("Excel/TarefasConcluidasPorMesPorUsuario")]
-        public async Task<IActionResult> ExcelRelatorioConclusaoMesPorUsuario()
+        [HttpGet("Excel/TarefasConcluidasPorMesPorUsuario/UsuarioId")]
+        public async Task<IActionResult> ExcelRelatorioConclusaoMesPorUsuario([FromRoute(Name = "UsuarioId")] int UsuarioId)
         {
             try
             {
-                var dados = await _relatorio.ExcelRelatorioTarefasConcluidasUsuarioMesAsync();
+                var dados = await _relatorio.ExcelRelatorioTarefasConcluidasUsuarioMesAsync(UsuarioId);
 
                 return File(dados, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "RelatorioTarefasMediaConcluidas.xlsx");
 
@@ -108,12 +108,12 @@ namespace AJTarefasApp.Controllers.Relatorio
             }
         }
 
-        [HttpGet("Pdf/TarefasMediasConcluidasPorMesPorUsuario")]
-        public async Task<IActionResult> PdfRelatorioMediaConclusaoMes()
+        [HttpGet("Pdf/TarefasMediasConcluidasPorMesPorUsuario/UsuarioId")]
+        public async Task<IActionResult> PdfRelatorioMediaConclusaoMes([FromRoute(Name = "UsuarioId")] int UsuarioId)
         {
             try
             {
-                var dados = await _relatorio.PdfRelatorioMediasTarefasConcluidasUsuarioMesAsync();
+                var dados = await _relatorio.PdfRelatorioMediasTarefasConcluidasUsuarioMesAsync(UsuarioId);
 
                 return File(dados, "application/pdf", "RelatorioTarefasConcluídaPorUsuário.pdf");
 
@@ -131,12 +131,12 @@ namespace AJTarefasApp.Controllers.Relatorio
             }
         }
 
-        [HttpGet("Pdf/TarefasConcluidasPorMesPorUsuario")]
-        public async Task<IActionResult> PdfRelatorioConclusaoMesPorUsuario()
+        [HttpGet("Pdf/TarefasConcluidasPorMesPorUsuario/{UsuarioId}")]
+        public async Task<IActionResult> PdfRelatorioConclusaoMesPorUsuario([FromRoute(Name = "UsuarioId")] int UsuarioId)
         {
             try
             {
-                var dados = await _relatorio.PdfRelatorioMediasTarefasConcluidasUsuarioMesAsync();
+                var dados = await _relatorio.PdfRelatorioMediasTarefasConcluidasUsuarioMesAsync(UsuarioId);
 
                 return File(dados, "application/pdf", "RelatorioTarefasConcluídamédiasPorUsuário.pdf");
 

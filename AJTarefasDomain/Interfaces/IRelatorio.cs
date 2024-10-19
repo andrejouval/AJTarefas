@@ -6,17 +6,17 @@ namespace AJTarefasDomain.Interfaces
 {
     public interface IRelatorio
     {
-        Task<List<TarefasConcluidasPorUsuario>> RelatorioTarefasConcluidasUsuarioMesAsync();
+        Task<List<TarefasConcluidasPorUsuario>> RelatorioTarefasConcluidasUsuarioMesAsync(int UsuarioId);
 
-        Task<List<MediaTarfasConcluidasPorMesPorUsuario>> RelatorioMediasTarefasConcluidasUsuarioMesAsync();
+        Task<List<MediaTarfasConcluidasPorMesPorUsuario>> RelatorioMediasTarefasConcluidasUsuarioMesAsync(int UsuarioId);
 
-        Task<byte[]> ExcelRelatorioTarefasConcluidasUsuarioMesAsync();
+        Task<byte[]> ExcelRelatorioTarefasConcluidasUsuarioMesAsync(int UsuarioId);
+        
+        Task<byte[]> ExcelRelatorioMediasTarefasConcluidasUsuarioMesAsync(int UsuarioId);
 
-        Task<byte[]> ExcelRelatorioMediasTarefasConcluidasUsuarioMesAsync();
+        Task<byte[]> PfdRelatorioTarefasConcluidasUsuarioMesAsync(int UsuarioId);
 
-        Task<byte[]> PfdRelatorioTarefasConcluidasUsuarioMesAsync();
-
-        Task<byte[]> PdfRelatorioMediasTarefasConcluidasUsuarioMesAsync();
+        Task<byte[]> PdfRelatorioMediasTarefasConcluidasUsuarioMesAsync(int UsuarioId);
 
     }
 }

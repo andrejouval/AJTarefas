@@ -1,11 +1,15 @@
 using AJTarefasDomain.Interfaces.Negocio.Projeto;
 using AJTarefasDomain.Interfaces.Negocio.Tarefa;
+using AJTarefasDomain.Interfaces.Negocio.Usuario;
 using AJTarefasDomain.Interfaces.Repositorio.Projeto;
+using AJTarefasDomain.Interfaces.Repositorio.Usuario;
 using AJTarefasDomain.Projeto;
 using AJTarefasDomain.Projeto.Post;
 using AJTarefasDomain.Tarefa;
 using AJTarefasNegocio.Projeto;
+using AJTarefasNegocio.Usuario;
 using AJTarefasRecursos.Repositorios.Projeto;
+using AJTarefasRecursos.Repositorios.Usuario;
 using AutoFixture;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,6 +27,10 @@ namespace AJTarefasTestes
 
         private IProjetoRepositorio _projetoRepositorio;
         private ITarefaRepositorio _tarefaRepositorio;
+
+        private IUsuarioService _usuarioService;
+        private IUsuarioRepositorio _usuarioRepositorio;
+
 
         private string _projetName = "Projeto_Teste_" + DateTime.Now.ToString("yyyy_MM_dd_HH_mm_ss");
 
@@ -44,12 +52,18 @@ namespace AJTarefasTestes
 
             builder.AddScoped<ITarefaRepositorio, TarefaRepositorio>();
 
+            builder.AddScoped<IUsuarioService, UsuarioService>();
+
+            builder.AddScoped<IUsuarioRepositorio, UsuarioRepositorio>();
+
             IServiceProvider serviceProvider = builder.BuildServiceProvider();
 
             _projetoService = serviceProvider.GetService<IProjetoService>();
             _tarefaService = serviceProvider.GetService<ITarefaService>();
             _projetoRepositorio = serviceProvider.GetService<IProjetoRepositorio>();
             _tarefaRepositorio = serviceProvider.GetService<ITarefaRepositorio>();
+            _usuarioService = serviceProvider.GetService<IUsuarioService>();
+            _usuarioRepositorio = serviceProvider.GetService<IUsuarioRepositorio>();
         }
 
         [Test]
@@ -466,6 +480,14 @@ namespace AJTarefasTestes
             }
         }
 
+        [Test]
+        public async Task t007_CenarioDeSucesso_UsuarioEGernteParaPegarRelatiios()
+        {
+            var usuario = await _usuarioRepositorio.RecuperarUsuarioAsync(1);
+
+            if ((int)usuario.Papel.UsuarioPapelCode == 1) Assert.Pass();
+            else Assert.Fail();
+        }
 
         private async Task<ProjetoDto> RecuperarProjetoTeste(string NomeProjeto)
         {

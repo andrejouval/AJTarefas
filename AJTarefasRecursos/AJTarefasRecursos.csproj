@@ -73,6 +73,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositorios\Projeto\ProjetoRepositorio.cs" />
     <Compile Include="Repositorios\Tarefa\TarefaRepositorio.cs" />
+    <Compile Include="Repositorios\Usuario\UsuarioRepositorio.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AJTarefasDomain\AJTarefasDomain.csproj">

@@ -1,4 +1,5 @@
 ﻿using AJTarefasDomain.Interfaces;
+using AJTarefasDomain.Interfaces.Negocio.Usuario;
 using AJTarefasDomain.Relatorios;
 using AJTarefasDomain.Tarefa;
 using iText.Html2pdf;
@@ -14,8 +15,22 @@ namespace AJTarefasNegocio.Relatorio
 {
     public class Relatorio : IRelatorio
     {
-        public async Task<List<TarefasConcluidasPorUsuario>> RelatorioTarefasConcluidasUsuarioMesAsync()
+        private readonly IUsuarioService _usuarioService;
+
+        public Relatorio (IUsuarioService usuarioService)
         {
+           _usuarioService = usuarioService;
+        }
+
+        public async Task<List<TarefasConcluidasPorUsuario>> RelatorioTarefasConcluidasUsuarioMesAsync(int UsuarioId)
+        {
+            var usuario = await _usuarioService.RecuperarUsuarioAsync(UsuarioId);
+
+            if ((int)usuario.Papel.UsuarioPapelCode > 1)
+            {
+                throw new Exception("Apenas gerentes podem acessar esse relatório");
+            }
+
             var massa = AJTarefasRecursos.GeradorDados.MassaDados.GerarProjetosComTarefas(500, 15);
 
             var tarefasConcluidas = massa.Select(p => p.Tarefas.Where(t => t.Status.StatusCode == StatusTarefa.Concluida));
@@ -32,9 +47,9 @@ namespace AJTarefasNegocio.Relatorio
             return resultado;
         }
 
-        public async Task<List<MediaTarfasConcluidasPorMesPorUsuario>> RelatorioMediasTarefasConcluidasUsuarioMesAsync()
+        public async Task<List<MediaTarfasConcluidasPorMesPorUsuario>> RelatorioMediasTarefasConcluidasUsuarioMesAsync(int UsuarioId)
         {
-            var tarefas = await RelatorioTarefasConcluidasUsuarioMesAsync();
+            var tarefas = await RelatorioTarefasConcluidasUsuarioMesAsync(UsuarioId);
 
             var resultado = tarefas.GroupBy(g => g.Usuario)
                                     .Select(s => new MediaTarfasConcluidasPorMesPorUsuario()
@@ -48,12 +63,12 @@ namespace AJTarefasNegocio.Relatorio
             return resultado;
         }
 
-        public async Task<byte[]> ExcelRelatorioTarefasConcluidasUsuarioMesAsync()
+        public async Task<byte[]> ExcelRelatorioTarefasConcluidasUsuarioMesAsync(int UsuarioId)
         {
 
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
 
-            var resultado = await RelatorioTarefasConcluidasUsuarioMesAsync();
+            var resultado = await RelatorioTarefasConcluidasUsuarioMesAsync(UsuarioId);
 
             using(var package = new ExcelPackage())
             {
@@ -81,11 +96,11 @@ namespace AJTarefasNegocio.Relatorio
             }
         }
 
-        public async Task<byte[]> ExcelRelatorioMediasTarefasConcluidasUsuarioMesAsync()
+        public async Task<byte[]> ExcelRelatorioMediasTarefasConcluidasUsuarioMesAsync(int UsuarioId)
         {
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
 
-            var resultado = await RelatorioMediasTarefasConcluidasUsuarioMesAsync();
+            var resultado = await RelatorioMediasTarefasConcluidasUsuarioMesAsync(UsuarioId);
 
             using (var package = new ExcelPackage())
             {
@@ -111,9 +126,9 @@ namespace AJTarefasNegocio.Relatorio
             }
         }
 
-        public async Task<byte[]> PfdRelatorioTarefasConcluidasUsuarioMesAsync()
+        public async Task<byte[]> PfdRelatorioTarefasConcluidasUsuarioMesAsync(int UsuarioId)
         {
-            var resultado = await RelatorioTarefasConcluidasUsuarioMesAsync();
+            var resultado = await RelatorioTarefasConcluidasUsuarioMesAsync(UsuarioId);
 
             string htmlTemplate = File.ReadAllText("RelatorioModelo\\ModeloRelatorio.html");
 
@@ -154,9 +169,9 @@ namespace AJTarefasNegocio.Relatorio
             }
         }
 
-        public async Task<byte[]> PdfRelatorioMediasTarefasConcluidasUsuarioMesAsync()
+        public async Task<byte[]> PdfRelatorioMediasTarefasConcluidasUsuarioMesAsync(int UsuarioId)
         {
-            var resultado = await RelatorioMediasTarefasConcluidasUsuarioMesAsync();
+            var resultado = await RelatorioMediasTarefasConcluidasUsuarioMesAsync(UsuarioId);
 
             string htmlTemplate = File.ReadAllText("RelatorioModelo\\ModeloRelatorio.html");
 
@@ -194,10 +209,6 @@ namespace AJTarefasNegocio.Relatorio
                 return memoryStream.ToArray();
             }
         }
-
-
-
-
 
     }
 }

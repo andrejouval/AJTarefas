@@ -155,6 +155,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Relatorio\Relatorio.cs" />
     <Compile Include="Tarefa\TarefaNegocio.cs" />
+    <Compile Include="Usuario\UsuarioService.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AJTarefasDomain\AJTarefasDomain.csproj">
@@ -169,10 +170,6 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Relatorio\logo_eclipseworks.svg" />
-    <Content Include="Relatorio\ModeloRelatorio.html" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
