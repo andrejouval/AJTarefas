@@ -1,7 +1,9 @@
+using AJTarefasDomain.Interfaces;
 using AJTarefasDomain.Interfaces.Negocio.Projeto;
 using AJTarefasDomain.Interfaces.Negocio.Tarefa;
 using AJTarefasDomain.Interfaces.Repositorio.Projeto;
 using AJTarefasNegocio.Projeto;
+using AJTarefasNegocio.Relatorio;
 using AJTarefasRecursos.Repositorios.Projeto;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,6 +20,8 @@ builder.Services.AddScoped<IProjetoRepositorio, ProjetoRepositorio>();
 
 builder.Services.AddScoped<ITarefaService, TarefaNegocio>();
 builder.Services.AddScoped<ITarefaRepositorio, TarefaRepositorio>();
+
+builder.Services.AddScoped<IRelatorio, Relatorio>();
 
 var app = builder.Build();
 

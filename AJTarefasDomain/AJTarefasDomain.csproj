@@ -48,6 +48,7 @@
     <Compile Include="Base\UsuarioDto.cs" />
     <Compile Include="Base\UsuarioPapelDto.cs" />
     <Compile Include="Base\UsuariosPapel.cs" />
+    <Compile Include="Interfaces\IRelatorio.cs" />
     <Compile Include="Interfaces\Negocio\Projeto\IProjetoService.cs" />
     <Compile Include="Interfaces\Negocio\Tarefa\ITarefaService.cs" />
     <Compile Include="Interfaces\Repositorio\Projeto\IProjetoRepositorio.cs" />
@@ -67,6 +68,5 @@
     <Compile Include="Tarefa\TarefaPrioridadeDto.cs" />
     <Compile Include="Tarefa\TarefaStatusDto.cs" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

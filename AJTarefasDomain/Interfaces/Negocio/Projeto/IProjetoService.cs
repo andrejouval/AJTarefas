@@ -17,9 +17,5 @@ namespace AJTarefasDomain.Interfaces.Negocio.Projeto
 
         Task<IEnumerable<ProjetoDto>> RecuperarProjetosAsync(int? ProjetoId = null, int? UsuarioId = null);
 
-        Task<List<TarefasConcluidasPorUsuario>> RelatorioTarefasConcluidasUsuarioMesAsync();
-
-        Task<List<MediaTarfasConcluidasPorMesPorUsuario>> RelatorioMediasTarefasConcluidasUsuarioMesAsync();
-
     }
 }
