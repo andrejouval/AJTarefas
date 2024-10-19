@@ -51,8 +51,10 @@
     <Compile Include="Interfaces\IRelatorio.cs" />
     <Compile Include="Interfaces\Negocio\Projeto\IProjetoService.cs" />
     <Compile Include="Interfaces\Negocio\Tarefa\ITarefaService.cs" />
+    <Compile Include="Interfaces\Negocio\Usuario\IUsuarioService.cs" />
     <Compile Include="Interfaces\Repositorio\Projeto\IProjetoRepositorio.cs" />
     <Compile Include="Interfaces\Repositorio\Tarefa\ITarefaRepositorio.cs" />
+    <Compile Include="Interfaces\Repositorio\Usuario\IUsuarioRepositorio.cs" />
     <Compile Include="Projeto\PostProjetoRequest.cs" />
     <Compile Include="Projeto\ProjetoDto.cs" />
     <Compile Include="Projeto\ProjetoStatusDto.cs" />
