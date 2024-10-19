@@ -1,6 +1,7 @@
 ﻿
 using AJTarefasDomain.Projeto;
 using AJTarefasDomain.Projeto.Post;
+using AJTarefasDomain.Relatorios;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -15,5 +16,10 @@ namespace AJTarefasDomain.Interfaces.Negocio.Projeto
         Task DeleteProjetoAsync(int ProjetoId);
 
         Task<IEnumerable<ProjetoDto>> RecuperarProjetosAsync(int? ProjetoId = null, int? UsuarioId = null);
+
+        Task<List<TarefasConcluidasPorUsuario>> RelatorioTarefasConcluidasUsuarioMesAsync();
+
+        Task<List<MediaTarfasConcluidasPorMesPorUsuario>> RelatorioMediasTarefasConcluidasUsuarioMesAsync();
+
     }
 }
