@@ -1,8 +1,13 @@
-﻿using AJTarefasDomain.Interfaces.Negocio.Projeto;
+﻿using AJTarefasDomain.Base;
+using AJTarefasDomain.Interfaces.Negocio.Projeto;
 using AJTarefasDomain.Interfaces.Repositorio.Projeto;
 using AJTarefasDomain.Projeto;
 using AJTarefasDomain.Projeto.Post;
+using AJTarefasDomain.Relatorios;
+using AJTarefasDomain.Tarefa;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace AJTarefasNegocio.Projeto
@@ -61,5 +66,38 @@ namespace AJTarefasNegocio.Projeto
             return await _projetoRepositorio.RecuperarProjetosAsync(ProjetoId, UsuarioId);
         }
 
+        public async Task<List<TarefasConcluidasPorUsuario>> RelatorioTarefasConcluidasUsuarioMesAsync()
+        {
+            var massa = AJTarefasRecursos.GeradorDados.MassaDados.GerarProjetosComTarefas(500, 15);
+
+            var tarefasConcluidas = massa.Select(p => p.Tarefas.Where(t => t.Status.StatusCode == StatusTarefa.Concluida));
+
+            var resultado = tarefasConcluidas.SelectMany(t => t)
+                                             .GroupBy(t => new { t.Usuario, t.DataTermino.Value.Year, t.DataTermino.Value.Month })
+                                             .Select(g => new TarefasConcluidasPorUsuario()
+                                             {
+                                                 Usuario = g.Key.Usuario,
+                                                 MesAno = g.Key.Year.ToString() + g.Key.Month.ToString(),
+                                                 Quantidade = g.Count()
+                                             }).ToList();
+
+            return resultado;
+        }
+
+        public async Task<List<MediaTarfasConcluidasPorMesPorUsuario>> RelatorioMediasTarefasConcluidasUsuarioMesAsync()
+        {
+            var tarefas = await RelatorioTarefasConcluidasUsuarioMesAsync();
+
+            var resultado = tarefas.GroupBy(g => g.Usuario)
+                                    .Select(s => new MediaTarfasConcluidasPorMesPorUsuario()
+                                    {
+                                        Usuario = s.Key,
+                                        TarefasMediasMes = Math.Round(s.Average(a => a.Quantidade), 2)                                      
+                                    }).ToList();
+
+
+
+            return resultado;
+        }
     }
 }

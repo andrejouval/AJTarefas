@@ -56,6 +56,8 @@
     <Compile Include="Projeto\ProjetoDto.cs" />
     <Compile Include="Projeto\ProjetoStatusDto.cs" />
     <Compile Include="Projeto\StatusProjeto.cs" />
+    <Compile Include="Relatorios\MediaTarfasConcluidasPorMesPorUsuario.cs" />
+    <Compile Include="Relatorios\TarefasConcluidasPorUsuario.cs" />
     <Compile Include="Tarefa\PostTarefaRequest.cs" />
     <Compile Include="Tarefa\PrioridadeTarefa.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

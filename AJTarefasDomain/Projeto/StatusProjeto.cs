@@ -10,9 +10,9 @@ namespace AJTarefasDomain.Projeto
         EmExecucao,
         [Description("Projeto suspenso")]
         Suspenso,
-        [Description("Projeto cancelado")]
-        Cancelado,
         [Description("Projeto concluído")]
-        Concluido
+        Concluido,
+        [Description("Projeto cancelado")]
+        Cancelado
     }
 }
