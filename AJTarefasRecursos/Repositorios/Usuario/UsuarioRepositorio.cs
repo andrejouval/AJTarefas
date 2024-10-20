@@ -49,6 +49,8 @@ namespace AJTarefasRecursos.Repositorios.Usuario
                     };
                 }
 
+                _con.Close();
+
                 return usuario;
             }
             catch (System.Exception)
