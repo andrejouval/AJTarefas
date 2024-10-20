@@ -22,6 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\AJTarefasDomain\AJTarefasDomain.csproj" />
     <ProjectReference Include="..\AJTarefasNegocio\AJTarefasNegocio.csproj" />
   </ItemGroup>
 
