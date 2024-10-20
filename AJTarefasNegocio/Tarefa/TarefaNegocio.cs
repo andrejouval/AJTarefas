@@ -1,6 +1,7 @@
 ﻿using AJTarefasDomain.Base;
 using AJTarefasDomain.Interfaces.Negocio.Projeto;
 using AJTarefasDomain.Interfaces.Negocio.Tarefa;
+using AJTarefasDomain.Interfaces.Negocio.Usuario;
 using AJTarefasDomain.Interfaces.Repositorio.Projeto;
 using AJTarefasDomain.Tarefa;
 using System;
@@ -13,12 +14,15 @@ namespace AJTarefasNegocio.Projeto
         private readonly ITarefaRepositorio _tarefaRepositorio;
         private readonly IProjetoRepositorio _projetoRepositorio;
         private readonly IProjetoService _projetoService;
+        private readonly IUsuarioService _usuarioService;
 
-        public TarefaNegocio(ITarefaRepositorio tarefaRepo, IProjetoRepositorio projetoRepo, IProjetoService projetoService)
+        public TarefaNegocio(ITarefaRepositorio tarefaRepo, IProjetoRepositorio projetoRepo, IProjetoService projetoService
+            , IUsuarioService usuarioService)
         {
             _tarefaRepositorio = tarefaRepo;
             _projetoRepositorio = projetoRepo;
             _projetoService = projetoService;
+            _usuarioService = usuarioService;
         }
         public async Task<TarefaDto> PostTarefaAsync(PostTarefaRequest Tarefa)
         {
@@ -72,6 +76,22 @@ namespace AJTarefasNegocio.Projeto
             if (Tarefa.PrioridadeTarefa.PrioridadeCode == 0)
             {
                 Tarefa.PrioridadeTarefa = tarefaAtual.PrioridadeTarefa;
+            }
+
+            var usuario = await _usuarioService.RecuperarUsuarioAsync(Tarefa.Usuario.UsuarioId);
+
+            if (usuario.UsuarioId == 0)
+            {
+                var comentatio = Tarefa.Comentarios.FirstOrDefault();
+
+                if (comentatio == null)
+                {
+                    throw new Exception("Deve ser informado o usuário da tarefa.");
+                }
+
+                usuario = await _usuarioService.RecuperarUsuarioAsync(comentatio.IdUsuario);
+
+                Tarefa.Usuario = usuario;
             }
 
             var eValido = await EValido(Tarefa);

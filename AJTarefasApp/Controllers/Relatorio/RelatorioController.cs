@@ -85,7 +85,7 @@ namespace AJTarefasApp.Controllers.Relatorio
             }
         }
 
-        [HttpGet("Excel/TarefasConcluidasPorMesPorUsuario/UsuarioId")]
+        [HttpGet("Excel/TarefasConcluidasPorMesPorUsuario/{UsuarioId}")]
         public async Task<IActionResult> ExcelRelatorioConclusaoMesPorUsuario([FromRoute(Name = "UsuarioId")] int UsuarioId)
         {
             try
@@ -108,7 +108,7 @@ namespace AJTarefasApp.Controllers.Relatorio
             }
         }
 
-        [HttpGet("Pdf/TarefasMediasConcluidasPorMesPorUsuario/UsuarioId")]
+        [HttpGet("Pdf/TarefasMediasConcluidasPorMesPorUsuario/{UsuarioId}")]
         public async Task<IActionResult> PdfRelatorioMediaConclusaoMes([FromRoute(Name = "UsuarioId")] int UsuarioId)
         {
             try

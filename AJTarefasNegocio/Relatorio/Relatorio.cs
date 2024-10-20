@@ -26,6 +26,11 @@ namespace AJTarefasNegocio.Relatorio
         {
             var usuario = await _usuarioService.RecuperarUsuarioAsync(UsuarioId);
 
+            if (usuario.UsuarioId == 0)
+            {
+                throw new Exception("Apenas gerentes podem acessar esse relatório");
+            }
+
             if ((int)usuario.Papel.UsuarioPapelCode > 1)
             {
                 throw new Exception("Apenas gerentes podem acessar esse relatório");
