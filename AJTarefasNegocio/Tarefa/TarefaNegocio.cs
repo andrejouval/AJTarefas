@@ -63,6 +63,11 @@ namespace AJTarefasNegocio.Projeto
         {
             var tarefaAtual = await _tarefaRepositorio.RecuperarTarefaAsync(Tarefa.ProjetoId, Tarefa.Id);
 
+            if (tarefaAtual.Id == 0)
+            {
+                throw new Exception("Tarefa inexistente.");
+            }
+
             if (string.IsNullOrEmpty(Tarefa.Titulo))
             {
                 Tarefa.Titulo = tarefaAtual.Titulo;
@@ -182,24 +187,35 @@ namespace AJTarefasNegocio.Projeto
             {
                 erroComum.EValido = false;
                 erroComum.MensagemError = "O projeto da tarefa deve ser informado.";
+                return erroComum;
             }
 
             if (string.IsNullOrEmpty(Tarefa.Titulo))
             {
                 erroComum.EValido = false;
                 erroComum.MensagemError = "O a tarefa deve ter um título";
+                return erroComum;
             }
 
             if (string.IsNullOrEmpty(Tarefa.Descricao))
             {
                 erroComum.EValido = false;
                 erroComum.MensagemError = "O a tarefa deve ter um descrição";
+                return erroComum;
+            }
+
+            if (Tarefa.PrioridadeTarefa == null)
+            {
+                erroComum.EValido = false;
+                erroComum.MensagemError = "As opções de prioridade são 1 - Baixa, 2 - Média e 3 - Alta";
+                return erroComum;
             }
 
             if (!Tarefa.PrioridadeTarefa.PrioridadeCode.IsValid())
             {
                 erroComum.EValido = false;
                 erroComum.MensagemError = "As opções de prioridade são 1 - Baixa, 2 - Média e 3 - Alta";
+                return erroComum;
             }
 
             var projetoExiste = await _projetoRepositorio.ProjetoExisteAsync(Tarefa.ProjetoId);
@@ -208,6 +224,7 @@ namespace AJTarefasNegocio.Projeto
             {
                 erroComum.EValido = false;
                 erroComum.MensagemError = "Favor entrar um código de projeto existente";
+                return erroComum;
             }
 
             var numeroTerefas = await _tarefaRepositorio.RecuperarQuantidadeTarefasAsync(Tarefa.ProjetoId);
@@ -216,12 +233,14 @@ namespace AJTarefasNegocio.Projeto
             {
                 erroComum.EValido = false;
                 erroComum.MensagemError = "Número máximo de tarefas foi atingida para esse projeto.";
+                return erroComum;
             }
 
             if (Tarefa.Usuario == null)
             {
                 erroComum.EValido = false;
                 erroComum.MensagemError = "Usuário é obrigatório.";
+                return erroComum;
             }
             
             return erroComum;
