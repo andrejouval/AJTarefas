@@ -1,3 +1,6 @@
+create database AJTarefas
+go
+
 use AJTarefas
 go
 
