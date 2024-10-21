@@ -81,6 +81,8 @@ Use o comando "docker ps" para se certificar que o mesmo está sendo executado.
 
 Agora você já pode usar a API através do link http://localhost:8080.
 
+Removi o controle do swagger apenas para desenvolvimento para facilitar a visualização.
+
 
 
 
